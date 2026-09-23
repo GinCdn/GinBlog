@@ -2,7 +2,8 @@
 
 一套前后端分离的博客与内容变现系统。后端基于 Go + Gin 提供接口服务，前端基于 React + TypeScript 构建，覆盖内容创作、分类标签、评论互动、用户中心、付费阅读与推广返佣、后台管理等完整链路。
 
-> English documentation: [README_EN.md](./README_EN.md)
+- 官方网站：[www.ginblog.cn](https://www.ginblog.cn)
+- English documentation: [README_EN.md](./README_EN.md)
 
 ## 项目简介
 
@@ -220,7 +221,7 @@ cp -r frontend/dist/* backend/web/
 
 ## 服务器推荐
 
-本项目已在生产环境稳定运行，部署时对服务器稳定性与网络质量有一定要求。推荐使用 **北海云**（[www.beihaiyun.com](https://www.beihaiyun.com)）云服务器，其配置灵活、带宽充足，适合中小型博客站点长期运行。
+本项目已在生产环境稳定运行，部署时对服务器稳定性与网络质量有一定要求。推荐使用 **贝海云**（[www.beihaiyun.com](https://www.beihaiyun.com)）云服务器，其配置灵活、带宽充足，适合中小型博客站点长期运行。
 
 ## 说明
 

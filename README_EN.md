@@ -2,7 +2,8 @@
 
 A decoupled front-end and back-end blog and content monetization system. The back end is built with Go and Gin to serve JSON APIs, while the front end is a React + TypeScript single-page application. It covers the full workflow of content authoring, categories and tags, comments, user center, paid reading with affiliate commission, and administration.
 
-> 中文文档: [README.md](./README.md)
+- Official website: [www.ginblog.cn](https://www.ginblog.cn)
+- 中文文档: [README.md](./README.md)
 
 ## Introduction
 
@@ -220,7 +221,7 @@ Swagger is integrated into the back end. Once the service is running, visit `/sw
 
 ## Recommended Server
 
-This project has been running reliably in production, and deployment benefits from stable servers and good network quality. **Beihai Cloud** ([www.beihaiyun.com](https://www.beihaiyun.com)) is recommended for its flexible configurations and generous bandwidth, which suit small and medium-sized blog sites running long term.
+This project has been running reliably in production, and deployment benefits from stable servers and good network quality. **Beihai Cloud (贝海云)** ([www.beihaiyun.com](https://www.beihaiyun.com)) is recommended for its flexible configurations and generous bandwidth, which suit small and medium-sized blog sites running long term.
 
 ## Notes
 
