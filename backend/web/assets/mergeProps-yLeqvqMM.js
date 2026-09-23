@@ -1,0 +1,1 @@
+function e(...e){let t={};for(let n of e)if(n)for(let e of Object.keys(n))n[e]!==void 0&&(t[e]=n[e]);return t}export{e as t};

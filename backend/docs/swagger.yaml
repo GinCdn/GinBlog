@@ -1,0 +1,2183 @@
+definitions:
+  model.AdminLoginDto:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.Article:
+    properties:
+      accessType:
+        type: string
+      author:
+        allOf:
+        - $ref: '#/definitions/model.User'
+        description: 关联作者（假设有User模型）
+      authorId:
+        type: integer
+      category:
+        allOf:
+        - $ref: '#/definitions/model.Category'
+        description: 关联分类
+      categoryId:
+        type: integer
+      commentContentUnlocked:
+        type: boolean
+      commentCount:
+        type: integer
+      content:
+        type: string
+      coverImage:
+        type: string
+      createTime:
+        $ref: '#/definitions/utils.HTime'
+      description:
+        type: string
+      discountRate:
+        type: number
+      favoriteCount:
+        type: integer
+      favorited:
+        type: boolean
+      hasCommentContent:
+        type: boolean
+      hasPaidContent:
+        type: boolean
+      hasProtectedContent:
+        type: boolean
+      id:
+        type: integer
+      isPublished:
+        type: boolean
+      isUnlocked:
+        type: boolean
+      keywords:
+        type: string
+      likeCount:
+        type: integer
+      liked:
+        type: boolean
+      next:
+        $ref: '#/definitions/model.ArticleNavigation'
+      paidContentUnlocked:
+        type: boolean
+      payablePrice:
+        type: number
+      previous:
+        $ref: '#/definitions/model.ArticleNavigation'
+      price:
+        type: number
+      rebateRate:
+        type: number
+      roleDiscount:
+        type: boolean
+      tags:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      title:
+        type: string
+      unlockReason:
+        type: string
+      updateTime:
+        $ref: '#/definitions/utils.HTime'
+      viewCount:
+        type: integer
+    type: object
+  model.ArticleNavigation:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  model.Category:
+    properties:
+      cid:
+        type: integer
+      count:
+        type: integer
+      createTime:
+        $ref: '#/definitions/utils.HTime'
+      description:
+        type: string
+      name:
+        type: string
+      parentId:
+        description: 支持多级分类
+        type: integer
+      slug:
+        type: string
+      updateTime:
+        $ref: '#/definitions/utils.HTime'
+    type: object
+  model.CreateCategory:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: integer
+      slug:
+        type: string
+    required:
+    - name
+    - slug
+    type: object
+  model.CreateEmail:
+    properties:
+      fromName:
+        type: string
+      host:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      username:
+        type: string
+    required:
+    - fromName
+    - host
+    - password
+    - port
+    - username
+    type: object
+  model.CreateUserDto:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      invite_code:
+        maxLength: 32
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      qq:
+        maxLength: 11
+        minLength: 5
+        type: string
+      sex:
+        type: integer
+      username:
+        type: string
+    required:
+    - code
+    - email
+    - password
+    - phone
+    - qq
+    - sex
+    - username
+    type: object
+  model.DeleteCategory:
+    properties:
+      cid:
+        type: integer
+    required:
+    - cid
+    type: object
+  model.EmailCodeVo:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    required:
+    - code
+    - email
+    type: object
+  model.EmailDto:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  model.PageResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.Article'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+      total_page:
+        type: integer
+    type: object
+  model.ProvinceAccessStatisticResp:
+    properties:
+      access_count:
+        description: 该省份总访问量
+        type: integer
+      last_access_at:
+        allOf:
+        - $ref: '#/definitions/utils.HTime'
+        description: 该省份最后访问时间
+      province:
+        description: 省份名称（如：广东）
+        type: string
+    type: object
+  model.ProvincePageResponse:
+    properties:
+      list:
+        description: 地区统计列表
+        items:
+          $ref: '#/definitions/model.ProvinceAccessStatisticResp'
+        type: array
+      page:
+        description: 当前页码
+        type: integer
+      page_size:
+        description: 每页条数
+        type: integer
+      total:
+        description: 总省份数
+        type: integer
+      total_page:
+        description: 总页数
+        type: integer
+    type: object
+  model.SiteConfig:
+    properties:
+      admin_email:
+        type: string
+      admin_kf_qq:
+        type: string
+      comment_email_notify:
+        type: boolean
+      comment_moderation:
+        type: boolean
+      copyright:
+        type: string
+      createTime:
+        $ref: '#/definitions/utils.HTime'
+      description:
+        type: string
+      favicon:
+        type: string
+      icp_record:
+        type: string
+      id:
+        type: integer
+      keywords:
+        type: string
+      logo:
+        type: string
+      sub_title:
+        type: string
+      title:
+        type: string
+      updateTime:
+        $ref: '#/definitions/utils.HTime'
+    type: object
+  model.Tag:
+    properties:
+      createTime:
+        $ref: '#/definitions/utils.HTime'
+      creator_id:
+        description: 新增字段
+        type: integer
+      creator_type:
+        description: 新增字段
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updateTime:
+        $ref: '#/definitions/utils.HTime'
+    type: object
+  model.TagListResponse:
+    properties:
+      list:
+        description: 当前页的标签列表
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      page:
+        description: 当前页码（与请求参数一致）
+        type: integer
+      page_size:
+        description: 每页条数（与请求参数一致）
+        type: integer
+      total:
+        description: 符合条件的标签总条数
+        type: integer
+      total_pages:
+        description: 总页数（自动计算）
+        type: integer
+    type: object
+  model.TagPageResponse:
+    properties:
+      list:
+        description: 用 interface{} 支持任意列表类型
+      page:
+        description: 当前页码
+        type: integer
+      page_size:
+        description: 每页条数
+        type: integer
+      total:
+        description: 总条数（数据库count返回int64）
+        type: integer
+      total_page:
+        description: 总页数（int类型）
+        type: integer
+    type: object
+  model.TagSearchStatisticResp:
+    properties:
+      last_search_at:
+        allOf:
+        - $ref: '#/definitions/utils.HTime'
+        description: 最后搜索时间（未搜索过为null）
+      search_count:
+        description: 搜索次数（未搜索过为0）
+        type: integer
+      tag_name:
+        description: 标签名称
+        type: string
+    type: object
+  model.UpdateAdminDto:
+    properties:
+      email:
+        type: string
+      nick_name:
+        type: string
+      phone:
+        type: string
+      qq:
+        type: string
+      token:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - nick_name
+    - phone
+    - qq
+    - username
+    type: object
+  model.UpdateAdminPwdDto:
+    properties:
+      newPwd:
+        type: string
+      oldPwd:
+        type: string
+      username:
+        type: string
+    required:
+    - newPwd
+    - oldPwd
+    - username
+    type: object
+  model.UpdateCategory:
+    properties:
+      cid:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: integer
+      slug:
+        type: string
+    required:
+    - cid
+    type: object
+  model.UpdateEmailDto:
+    properties:
+      fromName:
+        type: string
+      host:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      username:
+        type: string
+    required:
+    - fromName
+    - host
+    - password
+    - port
+    - username
+    type: object
+  model.UpdateEmailPwd:
+    properties:
+      code:
+        type: string
+      email:
+        description: 验证邮箱格式
+        type: string
+      new_pwd:
+        maxLength: 20
+        minLength: 6
+        type: string
+    required:
+    - code
+    - email
+    - new_pwd
+    type: object
+  model.UpdateUserDto:
+    properties:
+      email:
+        maxLength: 64
+        type: string
+      nickName:
+        maxLength: 32
+        type: string
+      phone:
+        type: string
+      qq:
+        maxLength: 11
+        type: string
+      sex:
+        enum:
+        - 1
+        - 2
+        type: integer
+    type: object
+  model.User:
+    properties:
+      createTime:
+        $ref: '#/definitions/utils.HTime'
+      email:
+        type: string
+      id:
+        type: integer
+      money:
+        type: number
+      nickName:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      qq:
+        type: string
+      real_name_auth:
+        type: boolean
+      roleLevel:
+        type: string
+      sex:
+        type: integer
+      status:
+        type: integer
+      updateTime:
+        $ref: '#/definitions/utils.HTime'
+      username:
+        type: string
+    type: object
+  model.UserLoginDto:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.UserPwdDto:
+    properties:
+      newPwd:
+        type: string
+      oldPwd:
+        type: string
+      username:
+        type: string
+    required:
+    - newPwd
+    - oldPwd
+    - username
+    type: object
+  result.Result:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  utils.HTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: GinBlog博客系统API接口文档
+  title: GinBlog博客系统
+  version: 1.0.1
+paths:
+  /api/GetCategoryChildrenInfo:
+    get:
+      description: 获取分类及子分类及每个分类下的已发布文章数量
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取分类及子分类
+      tags:
+      - 文章分类相关接口
+  /api/GetProvinceAccess:
+    get:
+      description: 返回各省份的访问总量、最后访问时间，支持分页和排序
+      parameters:
+      - description: 页码（默认1，最小1）
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数（默认20，最大100）
+        in: query
+        name: page_size
+        type: integer
+      - description: 排序字段（access_count/last_access_at，默认access_count）
+        in: query
+        name: sort_by
+        type: string
+      - description: 排序方式（asc/desc，默认desc）
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 查询成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/model.ProvincePageResponse'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.ProvinceAccessStatisticResp'
+                        type: array
+                    type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      summary: 查询各省份访问量统计
+      tags:
+      - 搜索统计相关接口
+  /api/GetSearch:
+    get:
+      description: 1. IP统计：仅访问单篇文章ID时触发；2. 标签统计：仅单搜索框搜标签/多字段传tag_names时触发；3. 浏览量：仅访问单篇ID时+1
+      parameters:
+      - description: 页码（默认1，最小1）
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数（默认20，最大100）
+        in: query
+        name: page_size
+        type: integer
+      - description: 单搜索框关键词（数字=ID，文本=标题/描述/内容/标签名）
+        in: query
+        name: keyword
+        type: string
+      - description: 文章ID（精确搜索，浏览量+1，IP统计触发）
+        in: query
+        name: id
+        type: integer
+      - description: 文章标题（模糊搜索）
+        in: query
+        name: title
+        type: string
+      - description: 文章内容（模糊搜索）
+        in: query
+        name: content
+        type: string
+      - description: 文章描述（模糊搜索）
+        in: query
+        name: description
+        type: string
+      - collectionFormat: csv
+        description: 标签名列表（多字段标签搜索，标签统计触发）
+        in: query
+        items:
+          type: string
+        name: tag_names
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 搜索成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PageResponse'
+              type: object
+        "400":
+          description: 参数错误（含标签不存在）
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      summary: 搜索文章（单关键词/多维度+分页+精准统计）
+      tags:
+      - 搜索统计相关接口
+  /api/GetSiteConfigInfo:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      summary: 获取站点配置
+      tags:
+      - 站点配置相关接口
+  /api/GetTagSearch:
+    get:
+      description: 关联标签表与标签搜索统计表，返回各标签的名称、搜索次数、最后搜索时间（未被搜索过的标签搜索量为0）
+      parameters:
+      - description: 页码（默认1，最小1）
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数（默认20，最大100）
+        in: query
+        name: page_size
+        type: integer
+      - description: 排序字段（search_count/last_search_at，默认search_count）
+        in: query
+        name: sort_by
+        type: string
+      - description: 排序方式（asc/desc，默认desc）
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 查询成功" // 这里必须加model.前缀
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/model.TagPageResponse'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.TagSearchStatisticResp'
+                        type: array
+                    type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      summary: 查询标签搜索量统计
+      tags:
+      - 搜索统计相关接口
+  /api/SendCode:
+    post:
+      description: 邮箱验证码接口(发送间隙60s)
+      parameters:
+      - description: 收件人邮箱地址
+        in: formData
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EmailDto'
+              type: object
+      summary: 邮箱验证码接口
+      tags:
+      - 邮箱相关接口
+  /api/VerifyCode:
+    post:
+      description: 邮箱验证码校验接口
+      parameters:
+      - description: 收件人邮箱地址
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 邮箱验证码
+        in: formData
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EmailCodeVo'
+              type: object
+      summary: 邮箱验证码校验接口
+      tags:
+      - 邮箱相关接口
+  /api/admin/CreateCategory:
+    post:
+      description: 添加文章分类信息
+      parameters:
+      - description: 分类名
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 缩略名
+        in: formData
+        name: slug
+        required: true
+        type: string
+      - description: 父类ID
+        in: formData
+        name: parent_id
+        type: integer
+      - description: 分类描述
+        in: formData
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CreateCategory'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加文章分类信息
+      tags:
+      - 文章分类相关接口
+  /api/admin/CreateEmail:
+    post:
+      description: 新增邮箱接口信息
+      parameters:
+      - description: 邮箱服务器
+        in: formData
+        name: host
+        required: true
+        type: string
+      - description: 邮箱用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 授权码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 邮箱端口
+        in: formData
+        name: port
+        required: true
+        type: integer
+      - description: 发件人名称
+        in: formData
+        name: from_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CreateEmail'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 新增邮箱接口信息
+      tags:
+      - 邮箱相关接口
+  /api/admin/CreateTag:
+    post:
+      description: 创建标签名（管理员和用户均可创建，自动区分创建者类型）
+      parameters:
+      - description: 标签名
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功返回标签信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建标签名
+      tags:
+      - 标签相关接口
+  /api/admin/CreateUser:
+    post:
+      description: 管理员创建新用户，用户名和密码为必传，其他字段可选（未传则用默认值）
+      parameters:
+      - description: 昵称（可选，最大32字符）
+        in: query
+        name: nick_name
+        type: string
+      - description: 账号（必传，唯一，最大32字符）
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: 密码（必传，最小6字符）
+        in: query
+        name: password
+        required: true
+        type: string
+      - description: 性别（可选，1-男/2-女）
+        in: query
+        name: sex
+        type: integer
+      - description: QQ（可选，最大10字符）
+        in: query
+        name: qq
+        type: string
+      - description: 邮箱（可选，最大64字符）
+        in: query
+        name: email
+        type: string
+      - description: 电话（可选，最大64字符）
+        in: query
+        name: phone
+        type: string
+      - description: 余额（可选，默认0，不能为负）
+        in: query
+        name: money
+        type: number
+      - description: 状态（可选，默认1-正常/2-封禁）
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功返回新用户信息（不含密码）
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "400":
+          description: 参数错误（如用户名/密码未传、字段不合法）
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未登录
+          schema:
+            $ref: '#/definitions/result.Result'
+        "403":
+          description: 无管理员权限
+          schema:
+            $ref: '#/definitions/result.Result'
+        "409":
+          description: 用户名已存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 管理员添加新用户
+      tags:
+      - 用户管理接口
+  /api/admin/DeleteCategory:
+    put:
+      description: 删除文章分类信息（需先删除子分类和关联文章）
+      parameters:
+      - description: 分类ID
+        in: formData
+        name: cid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DeleteCategory'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除文章分类信息
+      tags:
+      - 文章分类相关接口
+  /api/admin/DeleteTag:
+    put:
+      description: 根据ID删除指定标签（管理员可删除所有标签，用户仅可删除自己创建的标签）
+      parameters:
+      - description: 标签ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功返回true
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/result.Result'
+        "403":
+          description: 无权限删除该标签
+          schema:
+            $ref: '#/definitions/result.Result'
+        "404":
+          description: 标签或用户不存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据ID删除指定标签
+      tags:
+      - 标签相关接口
+  /api/admin/DeleteUser:
+    put:
+      description: 管理员通过用户ID删除指定用户，ID为必传
+      parameters:
+      - description: 用户ID（必传，精确匹配）
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功返回true
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误（如ID未传）
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未登录
+          schema:
+            $ref: '#/definitions/result.Result'
+        "403":
+          description: 无管理员权限
+          schema:
+            $ref: '#/definitions/result.Result'
+        "404":
+          description: 用户ID不存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 管理员删除用户
+      tags:
+      - 用户管理接口
+  /api/admin/GetCategoryChildrenInfo:
+    get:
+      description: 获取分类及子分类及每个分类下的已发布文章数量
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取分类及子分类
+      tags:
+      - 文章分类相关接口
+  /api/admin/GetTagList:
+    get:
+      description: 分页获取标签列表（管理员看所有，用户仅看管理员预留标签）
+      parameters:
+      - description: 页码（默认1）
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数（可选20/50/100，默认20）
+        in: query
+        name: page_size
+        type: integer
+      - description: 排序方式（create_time_desc-降序，create_time_asc-升序，默认降序）
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分页标签列表
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TagListResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取标签列表
+      tags:
+      - 标签相关接口
+  /api/admin/GetUserInfo:
+    get:
+      description: 管理员分页获取用户信息，支持按ID、账号、QQ、邮箱、性别、状态筛选，默认每页20条
+      parameters:
+      - description: 页码（从1开始，默认1）
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数（支持20/50/100，默认20）
+        in: query
+        name: page_size
+        type: integer
+      - description: 用户ID（精确匹配，可选）
+        in: query
+        name: id
+        type: integer
+      - description: 账号（模糊匹配，可选）
+        in: query
+        name: username
+        type: string
+      - description: QQ（模糊匹配，可选）
+        in: query
+        name: qq
+        type: string
+      - description: 邮箱（模糊匹配，可选）
+        in: query
+        name: email
+        type: string
+      - description: 性别（1-男，2-女，精确匹配，可选）
+        in: query
+        name: sex
+        type: integer
+      - description: 状态（1-正常，2-封禁，精确匹配，可选）
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 查询成功，返回用户列表和分页信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未登录
+          schema:
+            $ref: '#/definitions/result.Result'
+        "403":
+          description: 无管理员权限
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 管理员分页查询用户信息
+      tags:
+      - 用户管理接口
+  /api/admin/UpdateCategory:
+    post:
+      description: 支持部分字段更新，仅传入需要修改的字段即可
+      parameters:
+      - description: 分类ID（必须传入，用于定位分类）
+        in: formData
+        name: cid
+        required: true
+        type: integer
+      - description: 分类名（可选，传入则更新）
+        in: formData
+        name: name
+        type: string
+      - description: 缩略名（可选，传入则更新）
+        in: formData
+        name: slug
+        type: string
+      - description: 父类ID（可选，传入则更新）
+        in: formData
+        name: parent_id
+        type: integer
+      - description: 分类描述（可选，传入则更新）
+        in: formData
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UpdateCategory'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改文章分类信息（传入哪个字段就更新哪个字段）
+      tags:
+      - 文章分类相关接口
+  /api/admin/UpdateEmail:
+    post:
+      description: 修改邮箱接口信息
+      parameters:
+      - description: 邮箱服务器
+        in: formData
+        name: host
+        required: true
+        type: string
+      - description: 邮箱用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 授权码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 邮箱端口
+        in: formData
+        name: port
+        required: true
+        type: integer
+      - description: 发件人名称
+        in: formData
+        name: from_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UpdateEmailDto'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改邮箱接口信息
+      tags:
+      - 邮箱相关接口
+  /api/admin/UpdateTag:
+    post:
+      description: 修改标签名（管理员可修改所有标签，用户仅可修改自己创建的标签）
+      parameters:
+      - description: 标签ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 新标签名
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 修改成功返回标签信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误或标签名已存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改标签名
+      tags:
+      - 标签相关接口
+  /api/admin/UpdateUser:
+    post:
+      description: 管理员通过用户ID查询用户，仅更新传入的字段（未传字段保持不变），ID为必传
+      parameters:
+      - description: 用户ID（必传，精确匹配）
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 昵称（可选，最大32字符）
+        in: formData
+        name: nick_name
+        type: string
+      - description: 账号（可选，最大32字符）
+        in: formData
+        name: username
+        type: string
+      - description: 性别（可选，1-男/2-女）
+        in: formData
+        name: sex
+        type: integer
+      - description: QQ（可选，最大10字符）
+        in: formData
+        name: qq
+        type: string
+      - description: 邮箱（可选，最大64字符）
+        in: formData
+        name: email
+        type: string
+      - description: 电话（可选，最大64字符）
+        in: formData
+        name: phone
+        type: string
+      - description: 余额（可选，不能为负数）
+        in: formData
+        name: money
+        type: number
+      - description: 密码（可选，6-20位）
+        in: formData
+        name: password
+        type: string
+      - description: 状态（可选，1-正常/2-封禁）
+        in: formData
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功返回true
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误（如ID未传/字段不合法）
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未登录
+          schema:
+            $ref: '#/definitions/result.Result'
+        "403":
+          description: 无管理员权限
+          schema:
+            $ref: '#/definitions/result.Result'
+        "404":
+          description: 用户ID不存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 管理员修改用户信息
+      tags:
+      - 用户管理接口
+  /api/admin/getAdminInfo:
+    get:
+      description: 获取当前登录管理员的信息（从登录态中获取username）
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取管理员信息
+      tags:
+      - 后台相关接口
+  /api/admin/getEmailInfo:
+    get:
+      description: 获取邮箱信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取邮箱信息
+      tags:
+      - 邮箱相关接口
+  /api/admin/login:
+    post:
+      description: 后台登录接口
+      parameters:
+      - description: 用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdminLoginDto'
+              type: object
+      summary: 后台登录接口
+      tags:
+      - 后台相关接口
+  /api/admin/update:
+    post:
+      description: 修改当前登录管理员的用户名、昵称、QQ、邮箱和手机号
+      parameters:
+      - description: 用户名（5至20位字母、数字、下划线或短横线）
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 昵称
+        in: formData
+        name: nick_name
+        required: true
+        type: string
+      - description: QQ（5-11位数字）
+        in: formData
+        name: qq
+        required: true
+        type: string
+      - description: 邮箱（如test@qq.com）
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 手机号（11位有效数字）
+        in: formData
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功，用户名变更时返回新令牌
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UpdateAdminDto'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改管理员信息
+      tags:
+      - 后台相关接口
+  /api/admin/updateAdminPwd:
+    post:
+      description: 修改管理员密码
+      parameters:
+      - description: 用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 原密码
+        in: formData
+        name: old_pwd
+        required: true
+        type: string
+      - description: 新密码
+        in: formData
+        name: new_pwd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UpdateAdminPwdDto'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改管理员密码
+      tags:
+      - 后台相关接口
+  /api/admin/updateSiteConfig:
+    post:
+      parameters:
+      - description: 站点标题
+        in: formData
+        name: title
+        type: string
+      - description: 副标题
+        in: formData
+        name: sub_title
+        type: string
+      - description: 关键词
+        in: formData
+        name: keywords
+        type: string
+      - description: Logo URL
+        in: formData
+        name: logo
+        type: string
+      - description: Favicon URL
+        in: formData
+        name: favicon
+        type: string
+      - description: 管理员邮箱
+        in: formData
+        name: admin_email
+        type: string
+      - description: 客服QQ
+        in: formData
+        name: admin_kf_qq
+        type: string
+      - description: 站点描述
+        in: formData
+        name: description
+        type: string
+      - description: ICP备案号
+        in: formData
+        name: icp_record
+        type: string
+      - description: 是否开启评论审核
+        in: formData
+        name: comment_moderation
+        type: boolean
+      - description: 版权信息
+        in: formData
+        name: copyright
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SiteConfig'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新站点配置
+      tags:
+      - 站点配置相关接口
+  /api/admin/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 图片文件上传
+      parameters:
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回文件访问URL
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 图片文件上传
+      tags:
+      - 文件上传相关接口
+  /api/captcha:
+    get:
+      description: 生成图形验证码接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 生成成功返回true
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+      summary: 生成图形验证码接口
+      tags:
+      - 验证码相关接口
+  /api/captcha/verify:
+    post:
+      description: 图形验证码验证接口
+      parameters:
+      - description: 图形验证码ID
+        in: formData
+        name: captcha_id
+        required: true
+        type: string
+      - description: 验证码
+        in: formData
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 验证成功返回true
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+      summary: 图形验证码验证接口
+      tags:
+      - 验证码相关接口
+  /api/failed:
+    get:
+      description: 失败测试接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 失败测试接口
+      tags:
+      - 测试相关接口
+  /api/success:
+    get:
+      description: 成功测试接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 成功测试接口
+      tags:
+      - 测试相关接口
+  /api/user/CreateTag:
+    post:
+      description: 创建标签名（管理员和用户均可创建，自动区分创建者类型）
+      parameters:
+      - description: 标签名
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功返回标签信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建标签名
+      tags:
+      - 标签相关接口
+  /api/user/DeleteTag:
+    put:
+      description: 根据ID删除指定标签（管理员可删除所有标签，用户仅可删除自己创建的标签）
+      parameters:
+      - description: 标签ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功返回true
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/result.Result'
+        "403":
+          description: 无权限删除该标签
+          schema:
+            $ref: '#/definitions/result.Result'
+        "404":
+          description: 标签或用户不存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据ID删除指定标签
+      tags:
+      - 标签相关接口
+  /api/user/GetCategoryChildrenInfo:
+    get:
+      description: 获取分类及子分类及每个分类下的已发布文章数量
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取分类及子分类
+      tags:
+      - 文章分类相关接口
+  /api/user/GetTagList:
+    get:
+      description: 分页获取标签列表（管理员看所有，用户仅看管理员预留标签）
+      parameters:
+      - description: 页码（默认1）
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数（可选20/50/100，默认20）
+        in: query
+        name: page_size
+        type: integer
+      - description: 排序方式（create_time_desc-降序，create_time_asc-升序，默认降序）
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分页标签列表
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TagListResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/result.Result'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取标签列表
+      tags:
+      - 标签相关接口
+  /api/user/UpdateEmailPwd:
+    post:
+      description: 通过邮箱修改用户密码
+      parameters:
+      - description: 邮箱账号
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 验证码
+        in: formData
+        name: code
+        required: true
+        type: string
+      - description: 新密码(6-20位，必须包含字母大小写数字三种类型)
+        in: formData
+        name: new_pwd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UpdateEmailPwd'
+              type: object
+      summary: 通过邮箱修改用户密码
+      tags:
+      - 用户相关接口
+  /api/user/UpdateTag:
+    post:
+      description: 修改标签名（管理员可修改所有标签，用户仅可修改自己创建的标签）
+      parameters:
+      - description: 标签ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: 新标签名
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 修改成功返回标签信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+        "400":
+          description: 参数错误或标签名已存在
+          schema:
+            $ref: '#/definitions/result.Result'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改标签名
+      tags:
+      - 标签相关接口
+  /api/user/getUserInfo:
+    get:
+      description: 获取用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户信息
+      tags:
+      - 用户相关接口
+  /api/user/login:
+    post:
+      description: 用户登录接口
+      parameters:
+      - description: 用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserLoginDto'
+              type: object
+      summary: 用户登录
+      tags:
+      - 用户相关接口
+  /api/user/register:
+    post:
+      description: 用户注册接口
+      parameters:
+      - description: 用户名(5-20位)
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 密码(6-20位，需包含字母大小写数字三种类型)
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: QQ(5-11位数字)
+        in: formData
+        name: qq
+        required: true
+        type: string
+      - description: 邮箱(test@qq.com)
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 手机号(11位数字)
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: 性别(1=男,2=女)
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: sex
+        required: true
+        type: integer
+      - description: 验证码
+        in: formData
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CreateUserDto'
+              type: object
+      summary: 用户注册接口
+      tags:
+      - 用户相关接口
+  /api/user/update:
+    post:
+      description: 修改用户信息
+      parameters:
+      - description: 昵称
+        in: formData
+        name: nick_name
+        type: string
+      - description: QQ(5-11位数字)
+        in: formData
+        name: qq
+        type: string
+      - description: 邮箱(test@qq.com)
+        in: formData
+        name: email
+        type: string
+      - description: 手机号(11位数字)
+        in: formData
+        name: phone
+        type: string
+      - description: 性别(1=男,2=女)
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: sex
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UpdateUserDto'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改用户信息
+      tags:
+      - 用户相关接口
+  /api/user/updatePwd:
+    post:
+      description: 修改用户密码
+      parameters:
+      - description: 用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 原密码
+        in: formData
+        name: old_pwd
+        required: true
+        type: string
+      - description: 新密码(6-20位，必须包含字母大小写数字三种类型)
+        in: formData
+        name: new_pwd
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserPwdDto'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改用户密码
+      tags:
+      - 用户相关接口
+  /api/user/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 用户端图片文件上传（提现二维码等场景），安全校验与管理员上传一致
+      parameters:
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回文件访问URL
+          schema:
+            allOf:
+            - $ref: '#/definitions/result.Result'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 用户图片文件上传
+      tags:
+      - 文件上传相关接口
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

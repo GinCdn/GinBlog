@@ -1,0 +1,1 @@
+var e=/^\d{5,11}$/;function t(t){let n=String(t||``).trim();if(e.test(n))return`https://q2.qlogo.cn/headimg_dl?dst_uin=${encodeURIComponent(n)}&spec=100`}export{t};

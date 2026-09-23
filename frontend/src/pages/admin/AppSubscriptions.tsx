@@ -1,0 +1,5 @@
+import { useEffect, useState } from 'react'
+import { Card, Table, Tag } from 'antd'
+import { adminApi } from '@/api'
+import type { AppSubscription } from '@/types'
+export default function AppSubscriptions() { const [rows, setRows] = useState<AppSubscription[]>([]); useEffect(() => { void adminApi.getAppSubscriptions().then((r) => setRows(r.data || [])) }, []); return <div className="admin-page"><Card className="admin-panel admin-table" title="应用订阅" bordered={false}><Table rowKey="id" dataSource={rows} columns={[{ title: '用户', dataIndex: 'username' }, { title: '应用 ID', render: (_, r) => r.appId || r.app_id }, { title: '套餐 ID', render: (_, r) => r.planId || r.plan_id }, { title: 'AppKey', dataIndex: 'appKey' }, { title: '额度', render: (_, r) => `${r.quotaUsed || r.quota_used || 0} / ${r.quotaTotal || r.quota_total || '不限'}` }, { title: '状态', dataIndex: 'status', render: (v: boolean) => <Tag color={v ? 'green' : 'default'}>{v ? '有效' : '停用'}</Tag> }, { title: '到期时间', dataIndex: 'expiresAt' }]} /></Card></div> }

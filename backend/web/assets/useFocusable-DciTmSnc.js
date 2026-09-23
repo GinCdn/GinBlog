@@ -1,0 +1,1 @@
+import{r as e}from"./rolldown-runtime-hePW80VL.js";import{d as t}from"./jsx-runtime-BFX7hztz.js";var n=e(t());function r(e,t,r){return(0,n.useMemo)(()=>({trap:t??!0,focusTriggerAfterClose:r??!0,...e}),[e,t,r])}export{r as t};

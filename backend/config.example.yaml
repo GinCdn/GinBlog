@@ -1,0 +1,63 @@
+# 系统配置
+system:
+  host: "0.0.0.0"
+  port: 8080
+  env: debug
+  # 支付同步回调跳转到前端开发或部署地址
+  #env: release
+
+# 日志配置
+logger:
+  level: "info"
+  path: "./logs/log" #日志文件路径
+  show_line: true #是否显示调用行号
+  color: true #控制是否启用颜色
+  max_size: 200 #日志文件最大
+  max_age: 30 #日志保留天数
+  max_backups: 7 #最大备份文件数
+  compress: true #是否压缩旧日志
+  service_name: "auth-ginblog-api"
+  console: true #是否开启控制台
+
+# MySQL配置
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  username: "ginblog"
+  password: "请填写数据库密码"
+  hostname: "ginblog"
+  charset: "utf8mb4"
+  maxIdle: 50
+  maxOpen: 150
+
+# Redis 配置
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: "请填写redis密码"
+  db: 0
+
+# Token分层配置
+token:
+  adminToken:
+    header: "Bearer"
+    secret: "请替换为不少于32位的管理员令牌签名密钥"
+    expireTime: 24  # 管理员token有效期
+    issuer: "auth-ginblog-admin-api"
+  userToken:
+    header: "Bearer"
+    secret: "请替换为不少于32位的用户令牌签名密钥"
+    expireTime: 24 # 用户token有效期
+    issuer: "auth-ginblog-user-api"
+
+# 文件上传配置
+upload:
+  uploadDir: "/www/wwwroot/ginblog/upload/"  # 本地存储根目录（确保有写入权限）
+  uploadHost: "http://127.0.0.1:8080/uploads"  # 前端访问的基础域名
+  maxSize: 5242880  # 5MB（单位：字节，5*1024*1024）
+  videoMaxSize: 524288000 # 视频最大500MB
+  allowedExts: [".jpg", ".jpeg", ".png", ".gif"]  # 支持的扩展名
+
+# 授权配置
+auth:
+  authCode: "请填写你的授权码"

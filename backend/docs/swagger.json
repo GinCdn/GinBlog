@@ -1,0 +1,3507 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "GinBlog博客系统API接口文档",
+        "title": "GinBlog博客系统",
+        "contact": {},
+        "version": "1.0.1"
+    },
+    "paths": {
+        "/api/GetCategoryChildrenInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取分类及子分类及每个分类下的已发布文章数量",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章分类相关接口"
+                ],
+                "summary": "获取分类及子分类",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/GetProvinceAccess": {
+            "get": {
+                "description": "返回各省份的访问总量、最后访问时间，支持分页和排序",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索统计相关接口"
+                ],
+                "summary": "查询各省份访问量统计",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码（默认1，最小1）",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数（默认20，最大100）",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序字段（access_count/last_access_at，默认access_count）",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序方式（asc/desc，默认desc）",
+                        "name": "sort_order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查询成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/model.ProvincePageResponse"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ProvinceAccessStatisticResp"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/GetSearch": {
+            "get": {
+                "description": "1. IP统计：仅访问单篇文章ID时触发；2. 标签统计：仅单搜索框搜标签/多字段传tag_names时触发；3. 浏览量：仅访问单篇ID时+1",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索统计相关接口"
+                ],
+                "summary": "搜索文章（单关键词/多维度+分页+精准统计）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码（默认1，最小1）",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数（默认20，最大100）",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "单搜索框关键词（数字=ID，文本=标题/描述/内容/标签名）",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "文章ID（精确搜索，浏览量+1，IP统计触发）",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "文章标题（模糊搜索）",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "文章内容（模糊搜索）",
+                        "name": "content",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "文章描述（模糊搜索）",
+                        "name": "description",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "标签名列表（多字段标签搜索，标签统计触发）",
+                        "name": "tag_names",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "搜索成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.PageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误（含标签不存在）",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/GetSiteConfigInfo": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点配置相关接口"
+                ],
+                "summary": "获取站点配置",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/GetTagSearch": {
+            "get": {
+                "description": "关联标签表与标签搜索统计表，返回各标签的名称、搜索次数、最后搜索时间（未被搜索过的标签搜索量为0）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索统计相关接口"
+                ],
+                "summary": "查询标签搜索量统计",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码（默认1，最小1）",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数（默认20，最大100）",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序字段（search_count/last_search_at，默认search_count）",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序方式（asc/desc，默认desc）",
+                        "name": "sort_order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查询成功\" // 这里必须加model.前缀",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/model.TagPageResponse"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.TagSearchStatisticResp"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SendCode": {
+            "post": {
+                "description": "邮箱验证码接口(发送间隙60s)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "邮箱相关接口"
+                ],
+                "summary": "邮箱验证码接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "收件人邮箱地址",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.EmailDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/VerifyCode": {
+            "post": {
+                "description": "邮箱验证码校验接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "邮箱相关接口"
+                ],
+                "summary": "邮箱验证码校验接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "收件人邮箱地址",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱验证码",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.EmailCodeVo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/CreateCategory": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "添加文章分类信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章分类相关接口"
+                ],
+                "summary": "添加文章分类信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分类名",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "缩略名",
+                        "name": "slug",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "父类ID",
+                        "name": "parent_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类描述",
+                        "name": "description",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.CreateCategory"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/CreateEmail": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "新增邮箱接口信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "邮箱相关接口"
+                ],
+                "summary": "新增邮箱接口信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "邮箱服务器",
+                        "name": "host",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "授权码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "邮箱端口",
+                        "name": "port",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "发件人名称",
+                        "name": "from_name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.CreateEmail"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/CreateTag": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建标签名（管理员和用户均可创建，自动区分创建者类型）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "创建标签名",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "标签名",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建成功返回标签信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/CreateUser": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "管理员创建新用户，用户名和密码为必传，其他字段可选（未传则用默认值）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理接口"
+                ],
+                "summary": "管理员添加新用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "昵称（可选，最大32字符）",
+                        "name": "nick_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "账号（必传，唯一，最大32字符）",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码（必传，最小6字符）",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "性别（可选，1-男/2-女）",
+                        "name": "sex",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "QQ（可选，最大10字符）",
+                        "name": "qq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱（可选，最大64字符）",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电话（可选，最大64字符）",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "余额（可选，默认0，不能为负）",
+                        "name": "money",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态（可选，默认1-正常/2-封禁）",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建成功返回新用户信息（不含密码）",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误（如用户名/密码未传、字段不合法）",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未登录",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "403": {
+                        "description": "无管理员权限",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "409": {
+                        "description": "用户名已存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/DeleteCategory": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除文章分类信息（需先删除子分类和关联文章）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章分类相关接口"
+                ],
+                "summary": "删除文章分类信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "cid",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.DeleteCategory"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/DeleteTag": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "根据ID删除指定标签（管理员可删除所有标签，用户仅可删除自己创建的标签）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "根据ID删除指定标签",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功返回true",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "403": {
+                        "description": "无权限删除该标签",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "404": {
+                        "description": "标签或用户不存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/DeleteUser": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "管理员通过用户ID删除指定用户，ID为必传",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理接口"
+                ],
+                "summary": "管理员删除用户",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID（必传，精确匹配）",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功返回true",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误（如ID未传）",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未登录",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "403": {
+                        "description": "无管理员权限",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "404": {
+                        "description": "用户ID不存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/GetCategoryChildrenInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取分类及子分类及每个分类下的已发布文章数量",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章分类相关接口"
+                ],
+                "summary": "获取分类及子分类",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/GetTagList": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "分页获取标签列表（管理员看所有，用户仅看管理员预留标签）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "分页获取标签列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码（默认1）",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数（可选20/50/100，默认20）",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序方式（create_time_desc-降序，create_time_asc-升序，默认降序）",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "分页标签列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.TagListResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/GetUserInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "管理员分页获取用户信息，支持按ID、账号、QQ、邮箱、性别、状态筛选，默认每页20条",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理接口"
+                ],
+                "summary": "管理员分页查询用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码（从1开始，默认1）",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数（支持20/50/100，默认20）",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID（精确匹配，可选）",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "账号（模糊匹配，可选）",
+                        "name": "username",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "QQ（模糊匹配，可选）",
+                        "name": "qq",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱（模糊匹配，可选）",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "性别（1-男，2-女，精确匹配，可选）",
+                        "name": "sex",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态（1-正常，2-封禁，精确匹配，可选）",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查询成功，返回用户列表和分页信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未登录",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "403": {
+                        "description": "无管理员权限",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/UpdateCategory": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "支持部分字段更新，仅传入需要修改的字段即可",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章分类相关接口"
+                ],
+                "summary": "修改文章分类信息（传入哪个字段就更新哪个字段）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID（必须传入，用于定位分类）",
+                        "name": "cid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类名（可选，传入则更新）",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "缩略名（可选，传入则更新）",
+                        "name": "slug",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "父类ID（可选，传入则更新）",
+                        "name": "parent_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类描述（可选，传入则更新）",
+                        "name": "description",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UpdateCategory"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/UpdateEmail": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改邮箱接口信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "邮箱相关接口"
+                ],
+                "summary": "修改邮箱接口信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "邮箱服务器",
+                        "name": "host",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "授权码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "邮箱端口",
+                        "name": "port",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "发件人名称",
+                        "name": "from_name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UpdateEmailDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/UpdateTag": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改标签名（管理员可修改所有标签，用户仅可修改自己创建的标签）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "修改标签名",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新标签名",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "修改成功返回标签信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误或标签名已存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/UpdateUser": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "管理员通过用户ID查询用户，仅更新传入的字段（未传字段保持不变），ID为必传",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理接口"
+                ],
+                "summary": "管理员修改用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID（必传，精确匹配）",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "昵称（可选，最大32字符）",
+                        "name": "nick_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "账号（可选，最大32字符）",
+                        "name": "username",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "性别（可选，1-男/2-女）",
+                        "name": "sex",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "QQ（可选，最大10字符）",
+                        "name": "qq",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱（可选，最大64字符）",
+                        "name": "email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电话（可选，最大64字符）",
+                        "name": "phone",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "余额（可选，不能为负数）",
+                        "name": "money",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码（可选，6-20位）",
+                        "name": "password",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态（可选，1-正常/2-封禁）",
+                        "name": "status",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新成功返回true",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误（如ID未传/字段不合法）",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未登录",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "403": {
+                        "description": "无管理员权限",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "404": {
+                        "description": "用户ID不存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/getAdminInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取当前登录管理员的信息（从登录态中获取username）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台相关接口"
+                ],
+                "summary": "获取管理员信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/getEmailInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取邮箱信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "邮箱相关接口"
+                ],
+                "summary": "获取邮箱信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/login": {
+            "post": {
+                "description": "后台登录接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台相关接口"
+                ],
+                "summary": "后台登录接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.AdminLoginDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改当前登录管理员的用户名、昵称、QQ、邮箱和手机号",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台相关接口"
+                ],
+                "summary": "修改管理员信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名（5至20位字母、数字、下划线或短横线）",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "昵称",
+                        "name": "nick_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "QQ（5-11位数字）",
+                        "name": "qq",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱（如test@qq.com）",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "手机号（11位有效数字）",
+                        "name": "phone",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "更新成功，用户名变更时返回新令牌",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UpdateAdminDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/updateAdminPwd": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改管理员密码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "后台相关接口"
+                ],
+                "summary": "修改管理员密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "原密码",
+                        "name": "old_pwd",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码",
+                        "name": "new_pwd",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UpdateAdminPwdDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/updateSiteConfig": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点配置相关接口"
+                ],
+                "summary": "更新站点配置",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点标题",
+                        "name": "title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "副标题",
+                        "name": "sub_title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keywords",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Logo URL",
+                        "name": "logo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Favicon URL",
+                        "name": "favicon",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "管理员邮箱",
+                        "name": "admin_email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "客服QQ",
+                        "name": "admin_kf_qq",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "站点描述",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ICP备案号",
+                        "name": "icp_record",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否开启评论审核",
+                        "name": "comment_moderation",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "版权信息",
+                        "name": "copyright",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.SiteConfig"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/upload": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "图片文件上传",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件上传相关接口"
+                ],
+                "summary": "图片文件上传",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回文件访问URL",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/captcha": {
+            "get": {
+                "description": "生成图形验证码接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "验证码相关接口"
+                ],
+                "summary": "生成图形验证码接口",
+                "responses": {
+                    "200": {
+                        "description": "生成成功返回true",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/captcha/verify": {
+            "post": {
+                "description": "图形验证码验证接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "验证码相关接口"
+                ],
+                "summary": "图形验证码验证接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "图形验证码ID",
+                        "name": "captcha_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "验证码",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "验证成功返回true",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/failed": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "失败测试接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "测试相关接口"
+                ],
+                "summary": "失败测试接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/success": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "成功测试接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "测试相关接口"
+                ],
+                "summary": "成功测试接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/CreateTag": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建标签名（管理员和用户均可创建，自动区分创建者类型）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "创建标签名",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "标签名",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建成功返回标签信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/DeleteTag": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "根据ID删除指定标签（管理员可删除所有标签，用户仅可删除自己创建的标签）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "根据ID删除指定标签",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功返回true",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "403": {
+                        "description": "无权限删除该标签",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "404": {
+                        "description": "标签或用户不存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/GetCategoryChildrenInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取分类及子分类及每个分类下的已发布文章数量",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章分类相关接口"
+                ],
+                "summary": "获取分类及子分类",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/GetTagList": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "分页获取标签列表（管理员看所有，用户仅看管理员预留标签）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "分页获取标签列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码（默认1）",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数（可选20/50/100，默认20）",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序方式（create_time_desc-降序，create_time_asc-升序，默认降序）",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "分页标签列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.TagListResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/UpdateEmailPwd": {
+            "post": {
+                "description": "通过邮箱修改用户密码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关接口"
+                ],
+                "summary": "通过邮箱修改用户密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "邮箱账号",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "验证码",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码(6-20位，必须包含字母大小写数字三种类型)",
+                        "name": "new_pwd",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UpdateEmailPwd"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/UpdateTag": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改标签名（管理员可修改所有标签，用户仅可修改自己创建的标签）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "标签相关接口"
+                ],
+                "summary": "修改标签名",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新标签名",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "修改成功返回标签信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误或标签名已存在",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/getUserInfo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关接口"
+                ],
+                "summary": "获取用户信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/result.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "description": "用户登录接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关接口"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserLoginDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/register": {
+            "post": {
+                "description": "用户注册接口",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关接口"
+                ],
+                "summary": "用户注册接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名(5-20位)",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码(6-20位，需包含字母大小写数字三种类型)",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "QQ(5-11位数字)",
+                        "name": "qq",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱(test@qq.com)",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "手机号(11位数字)",
+                        "name": "phone",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "性别(1=男,2=女)",
+                        "name": "sex",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "验证码",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.CreateUserDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关接口"
+                ],
+                "summary": "修改用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "昵称",
+                        "name": "nick_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "QQ(5-11位数字)",
+                        "name": "qq",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱(test@qq.com)",
+                        "name": "email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "手机号(11位数字)",
+                        "name": "phone",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "性别(1=男,2=女)",
+                        "name": "sex",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UpdateUserDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/updatePwd": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "修改用户密码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关接口"
+                ],
+                "summary": "修改用户密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "原密码",
+                        "name": "old_pwd",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码(6-20位，必须包含字母大小写数字三种类型)",
+                        "name": "new_pwd",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserPwdDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/upload": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户端图片文件上传（提现二维码等场景），安全校验与管理员上传一致",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件上传相关接口"
+                ],
+                "summary": "用户图片文件上传",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回文件访问URL",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/result.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.AdminLoginDto": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Article": {
+            "type": "object",
+            "properties": {
+                "accessType": {
+                    "type": "string"
+                },
+                "author": {
+                    "description": "关联作者（假设有User模型）",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    ]
+                },
+                "authorId": {
+                    "type": "integer"
+                },
+                "category": {
+                    "description": "关联分类",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Category"
+                        }
+                    ]
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "commentContentUnlocked": {
+                    "type": "boolean"
+                },
+                "commentCount": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "coverImage": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discountRate": {
+                    "type": "number"
+                },
+                "favoriteCount": {
+                    "type": "integer"
+                },
+                "favorited": {
+                    "type": "boolean"
+                },
+                "hasCommentContent": {
+                    "type": "boolean"
+                },
+                "hasPaidContent": {
+                    "type": "boolean"
+                },
+                "hasProtectedContent": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isPublished": {
+                    "type": "boolean"
+                },
+                "isUnlocked": {
+                    "type": "boolean"
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "likeCount": {
+                    "type": "integer"
+                },
+                "liked": {
+                    "type": "boolean"
+                },
+                "next": {
+                    "$ref": "#/definitions/model.ArticleNavigation"
+                },
+                "paidContentUnlocked": {
+                    "type": "boolean"
+                },
+                "payablePrice": {
+                    "type": "number"
+                },
+                "previous": {
+                    "$ref": "#/definitions/model.ArticleNavigation"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "rebateRate": {
+                    "type": "number"
+                },
+                "roleDiscount": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "unlockReason": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "viewCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ArticleNavigation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Category": {
+            "type": "object",
+            "properties": {
+                "cid": {
+                    "type": "integer"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "createTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "支持多级分类",
+                    "type": "integer"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                }
+            }
+        },
+        "model.CreateCategory": {
+            "type": "object",
+            "required": [
+                "name",
+                "slug"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateEmail": {
+            "type": "object",
+            "required": [
+                "fromName",
+                "host",
+                "password",
+                "port",
+                "username"
+            ],
+            "properties": {
+                "fromName": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateUserDto": {
+            "type": "object",
+            "required": [
+                "code",
+                "email",
+                "password",
+                "phone",
+                "qq",
+                "sex",
+                "username"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "invite_code": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "qq": {
+                    "type": "string",
+                    "maxLength": 11,
+                    "minLength": 5
+                },
+                "sex": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DeleteCategory": {
+            "type": "object",
+            "required": [
+                "cid"
+            ],
+            "properties": {
+                "cid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EmailCodeVo": {
+            "type": "object",
+            "required": [
+                "code",
+                "email"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EmailDto": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.PageResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Article"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ProvinceAccessStatisticResp": {
+            "type": "object",
+            "properties": {
+                "access_count": {
+                    "description": "该省份总访问量",
+                    "type": "integer"
+                },
+                "last_access_at": {
+                    "description": "该省份最后访问时间",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/utils.HTime"
+                        }
+                    ]
+                },
+                "province": {
+                    "description": "省份名称（如：广东）",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProvincePageResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "description": "地区统计列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProvinceAccessStatisticResp"
+                    }
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页条数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总省份数",
+                    "type": "integer"
+                },
+                "total_page": {
+                    "description": "总页数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SiteConfig": {
+            "type": "object",
+            "properties": {
+                "admin_email": {
+                    "type": "string"
+                },
+                "admin_kf_qq": {
+                    "type": "string"
+                },
+                "comment_email_notify": {
+                    "type": "boolean"
+                },
+                "comment_moderation": {
+                    "type": "boolean"
+                },
+                "copyright": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "favicon": {
+                    "type": "string"
+                },
+                "icp_record": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "sub_title": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                }
+            }
+        },
+        "model.Tag": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "creator_id": {
+                    "description": "新增字段",
+                    "type": "integer"
+                },
+                "creator_type": {
+                    "description": "新增字段",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                }
+            }
+        },
+        "model.TagListResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "description": "当前页的标签列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
+                },
+                "page": {
+                    "description": "当前页码（与请求参数一致）",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页条数（与请求参数一致）",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "符合条件的标签总条数",
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "description": "总页数（自动计算）",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.TagPageResponse": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "description": "用 interface{} 支持任意列表类型"
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页条数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总条数（数据库count返回int64）",
+                    "type": "integer"
+                },
+                "total_page": {
+                    "description": "总页数（int类型）",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.TagSearchStatisticResp": {
+            "type": "object",
+            "properties": {
+                "last_search_at": {
+                    "description": "最后搜索时间（未搜索过为null）",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/utils.HTime"
+                        }
+                    ]
+                },
+                "search_count": {
+                    "description": "搜索次数（未搜索过为0）",
+                    "type": "integer"
+                },
+                "tag_name": {
+                    "description": "标签名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateAdminDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "nick_name",
+                "phone",
+                "qq",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "nick_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "qq": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateAdminPwdDto": {
+            "type": "object",
+            "required": [
+                "newPwd",
+                "oldPwd",
+                "username"
+            ],
+            "properties": {
+                "newPwd": {
+                    "type": "string"
+                },
+                "oldPwd": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateCategory": {
+            "type": "object",
+            "required": [
+                "cid"
+            ],
+            "properties": {
+                "cid": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateEmailDto": {
+            "type": "object",
+            "required": [
+                "fromName",
+                "host",
+                "password",
+                "port",
+                "username"
+            ],
+            "properties": {
+                "fromName": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UpdateEmailPwd": {
+            "type": "object",
+            "required": [
+                "code",
+                "email",
+                "new_pwd"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "email": {
+                    "description": "验证邮箱格式",
+                    "type": "string"
+                },
+                "new_pwd": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 6
+                }
+            }
+        },
+        "model.UpdateUserDto": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "nickName": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "qq": {
+                    "type": "string",
+                    "maxLength": 11
+                },
+                "sex": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "money": {
+                    "type": "number"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "qq": {
+                    "type": "string"
+                },
+                "real_name_auth": {
+                    "type": "boolean"
+                },
+                "roleLevel": {
+                    "type": "string"
+                },
+                "sex": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "$ref": "#/definitions/utils.HTime"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserLoginDto": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserPwdDto": {
+            "type": "object",
+            "required": [
+                "newPwd",
+                "oldPwd",
+                "username"
+            ],
+            "properties": {
+                "newPwd": {
+                    "type": "string"
+                },
+                "oldPwd": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "result.Result": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.HTime": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
