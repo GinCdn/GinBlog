@@ -4,6 +4,7 @@
 
 - 官方网站：[www.ginblog.cn](https://www.ginblog.cn)
 - English documentation: [README_EN.md](./README_EN.md)
+- 开源许可：[GNU GPL v3.0](./LICENSE)
 
 ## 项目简介
 
@@ -228,3 +229,16 @@ cp -r frontend/dist/* backend/web/
 - 本项目为前后端分离架构，后端接口统一返回 HTTP 200，业务状态通过响应体中的状态码区分。
 - 若需参与开发，建议先阅读 `backend/router/router.go` 了解接口分组，以及 `frontend/src/api/index.ts` 了解前端接口封装。
 - 提交代码前请确认未将 `config.yaml` 等含凭据的文件纳入版本控制。
+
+## 开源许可
+
+本项目采用 [GNU 通用公共许可证第 3 版](https://www.gnu.org/licenses/gpl-3.0.html)（GNU General Public License v3.0，简称 GPL-3.0）授权，完整条款见仓库根目录的 [LICENSE](./LICENSE) 文件。
+
+在遵守该许可证条款的前提下，你可以自由使用、修改和分发本项目，主要义务包括：
+
+- 分发本项目或其衍生作品时，须继续以 GPL-3.0 授权，并向接收者提供完整可获取的源代码。
+- 须完整保留原有的版权声明与许可证声明，不得移除或修改。
+- 若修改了源代码，须在相关文件中明确标注改动内容与改动日期。
+- 本软件按现状提供，不附带任何明示或默示的担保。
+
+Copyright (C) 2026 GinBlog Project

@@ -4,6 +4,7 @@ A decoupled front-end and back-end blog and content monetization system. The bac
 
 - Official website: [www.ginblog.cn](https://www.ginblog.cn)
 - 中文文档: [README.md](./README.md)
+- License: [GNU GPL v3.0](./LICENSE)
 
 ## Introduction
 
@@ -228,3 +229,16 @@ This project has been running reliably in production, and deployment benefits fr
 - The architecture is decoupled. The back end always returns HTTP 200, and business status is conveyed by the status code in the response body.
 - For development, start with `backend/router/router.go` to understand API grouping, and `frontend/src/api/index.ts` to understand the front-end API wrappers.
 - Before committing, make sure files containing credentials such as `config.yaml` are not staged for version control.
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) (GPL-3.0). The full terms are set out in the [LICENSE](./LICENSE) file at the repository root.
+
+You are free to use, modify and distribute this project provided you comply with the license. The principal obligations are:
+
+- Any distribution of this project or of a derivative work must remain licensed under GPL-3.0, and the complete corresponding source code must be made available to recipients.
+- All existing copyright and license notices must be preserved and must not be removed or altered.
+- If you modify the source code, the changed files must carry prominent notices stating what was changed and the date of the change.
+- The software is provided without any warranty, express or implied.
+
+Copyright (C) 2026 GinBlog Project
