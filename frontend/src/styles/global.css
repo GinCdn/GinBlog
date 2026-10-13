@@ -1475,7 +1475,7 @@ img {
   gap: 2px;
 }
 
-.joe-blog-nav > button,
+.joe-blog-nav > :is(button, a),
 .joe-blog-dropdown-wrap > button {
   position: relative;
   display: inline-flex;
@@ -1491,7 +1491,7 @@ img {
   transition: color 180ms ease, background-color 180ms ease;
 }
 
-.joe-blog-nav > button::after,
+.joe-blog-nav > :is(button, a)::after,
 .joe-blog-dropdown-wrap > button::after {
   position: absolute;
   right: 10px;
@@ -1506,16 +1506,16 @@ img {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.joe-blog-nav > button:hover,
-.joe-blog-nav > button.is-active,
+.joe-blog-nav > :is(button, a):hover,
+.joe-blog-nav > :is(button, a).is-active,
 .joe-blog-dropdown-wrap > button:hover,
 .joe-blog-dropdown-wrap > button.is-active {
   color: var(--joe-theme);
   background: #f7faff;
 }
 
-.joe-blog-nav > button:hover::after,
-.joe-blog-nav > button.is-active::after,
+.joe-blog-nav > :is(button, a):hover::after,
+.joe-blog-nav > :is(button, a).is-active::after,
 .joe-blog-dropdown-wrap > button:hover::after,
 .joe-blog-dropdown-wrap > button.is-active::after {
   opacity: 1;
@@ -1558,7 +1558,7 @@ img {
   transform: translateX(-50%);
 }
 
-.joe-blog-dropdown button {
+.joe-blog-dropdown :is(button, a) {
   display: block;
   width: 100%;
   padding: 9px 11px;
@@ -1570,7 +1570,7 @@ img {
   border-radius: 4px;
 }
 
-.joe-blog-dropdown button:hover {
+.joe-blog-dropdown :is(button, a):hover {
   color: var(--joe-theme);
   background: #f2f7ff;
 }
@@ -1582,7 +1582,7 @@ img {
   overscroll-behavior: contain;
 }
 
-.joe-blog-category-dropdown button {
+.joe-blog-category-dropdown :is(button, a) {
   white-space: nowrap;
 }
 
@@ -2084,7 +2084,7 @@ img {
   font-weight: 700;
 }
 
-.joe-section-heading > button {
+.joe-section-heading > :is(button, a) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2096,7 +2096,7 @@ img {
   border: 0;
 }
 
-.joe-section-heading > button:hover {
+.joe-section-heading > :is(button, a):hover {
   color: var(--joe-theme-deep);
 }
 
@@ -2477,7 +2477,7 @@ img {
   flex-direction: column;
 }
 
-.joe-sidebar-hot-list button {
+.joe-sidebar-hot-list :is(button, a) {
   display: grid;
   grid-template-columns: 25px minmax(0, 1fr);
   gap: 8px;
@@ -2488,11 +2488,11 @@ img {
   border-bottom: 1px solid var(--joe-line);
 }
 
-.joe-sidebar-hot-list button:last-child {
+.joe-sidebar-hot-list :is(button, a):last-child {
   border-bottom: 0;
 }
 
-.joe-sidebar-hot-list button:hover strong {
+.joe-sidebar-hot-list :is(button, a):hover strong {
   color: var(--joe-theme);
 }
 
@@ -2502,11 +2502,11 @@ img {
   font-weight: 700;
 }
 
-.joe-sidebar-hot-list button:nth-child(-n + 3) .joe-sidebar-hot-index {
+.joe-sidebar-hot-list :is(button, a):nth-child(-n + 3) .joe-sidebar-hot-index {
   color: #f18a73;
 }
 
-.joe-sidebar-hot-list button > span:last-child {
+.joe-sidebar-hot-list :is(button, a) > span:last-child {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -2536,7 +2536,7 @@ img {
   flex-direction: column;
 }
 
-.joe-sidebar-category-list button {
+.joe-sidebar-category-list :is(button, a) {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2551,12 +2551,12 @@ img {
   transition: color 180ms ease, padding-left 180ms ease;
 }
 
-.joe-sidebar-category-list button:last-child {
+.joe-sidebar-category-list :is(button, a):last-child {
   border-bottom: 0;
 }
 
-.joe-sidebar-category-list button:hover,
-.joe-sidebar-category-list button.is-active {
+.joe-sidebar-category-list :is(button, a):hover,
+.joe-sidebar-category-list :is(button, a).is-active {
   padding-left: 5px;
   color: var(--joe-theme);
 }
@@ -2900,7 +2900,7 @@ img {
   font-size: 11px;
 }
 
-.joe-post-breadcrumb button {
+.joe-post-breadcrumb :is(button, a) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -2910,7 +2910,7 @@ img {
   border: 0;
 }
 
-.joe-post-breadcrumb button:hover {
+.joe-post-breadcrumb :is(button, a):hover {
   color: #ffffff;
 }
 
@@ -2994,7 +2994,7 @@ img {
   color: var(--joe-theme);
 }
 
-.joe-post-article-label button {
+.joe-post-article-label :is(button, a) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -3435,10 +3435,10 @@ img {
 }
 
 .joe-night .joe-blog-brand,
-.joe-night .joe-blog-nav > button,
+.joe-night .joe-blog-nav > :is(button, a),
 .joe-night .joe-blog-dropdown-wrap > button,
 .joe-night .joe-section-heading h2,
-.joe-night .joe-section-heading > button,
+.joe-night .joe-section-heading > :is(button, a),
 .joe-night .joe-sidebar-title,
 .joe-night .joe-sidebar-author-content > strong,
 .joe-night .joe-hot-card h3,
@@ -3449,11 +3449,11 @@ img {
   color: var(--joe-text);
 }
 
-.joe-night .joe-blog-nav > button:hover,
-.joe-night .joe-blog-nav > button.is-active,
+.joe-night .joe-blog-nav > :is(button, a):hover,
+.joe-night .joe-blog-nav > :is(button, a).is-active,
 .joe-night .joe-blog-dropdown-wrap > button:hover,
 .joe-night .joe-blog-dropdown-wrap > button.is-active,
-.joe-night .joe-section-heading > button:hover {
+.joe-night .joe-section-heading > :is(button, a):hover {
   color: #6eb2ff;
   background: #1d3048;
 }
@@ -3490,7 +3490,7 @@ img {
   border-color: var(--joe-line);
 }
 
-.joe-night .joe-blog-dropdown button:hover,
+.joe-night .joe-blog-dropdown :is(button, a):hover,
 .joe-night .joe-quick-link:hover {
   background: #1d3048;
 }
@@ -3510,7 +3510,7 @@ img {
 .joe-night .joe-sidebar-notice,
 .joe-night .joe-sidebar-progress-item > div,
 .joe-night .joe-sidebar-hot-list strong,
-.joe-night .joe-sidebar-category-list button,
+.joe-night .joe-sidebar-category-list :is(button, a),
 .joe-night .joe-post-content .markdown-body,
 .joe-night .joe-post-toc p,
 .joe-night .joe-post-note-card p {
@@ -3520,7 +3520,7 @@ img {
 .joe-night .joe-card-tags span,
 .joe-night .joe-sidebar-tags button,
 .joe-night .joe-post-tags button,
-.joe-night .joe-post-article-label button {
+.joe-night .joe-post-article-label :is(button, a) {
   color: #8eb8ec;
   background: #203b5b;
 }
@@ -3578,12 +3578,12 @@ img {
     min-width: auto;
   }
 
-  .joe-blog-nav > button,
+  .joe-blog-nav > :is(button, a),
   .joe-blog-dropdown-wrap > button {
     padding: 0 7px;
   }
 
-  .joe-blog-nav > button span,
+  .joe-blog-nav > :is(button, a) span,
   .joe-blog-dropdown-wrap > button span {
     display: none;
   }
@@ -3629,7 +3629,7 @@ img {
     gap: 0;
   }
 
-  .joe-blog-nav > button,
+  .joe-blog-nav > :is(button, a),
   .joe-blog-dropdown-wrap > button {
     height: 58px;
     padding: 0 8px;
@@ -3729,7 +3729,7 @@ img {
     gap: 5px;
   }
 
-  .joe-blog-nav > button,
+  .joe-blog-nav > :is(button, a),
   .joe-blog-dropdown-wrap > button {
     padding: 0 6px;
   }
@@ -3925,9 +3925,9 @@ img {
 
 
 /* Joe 风格博客导航按钮：统一导航与下拉按钮的字号。 */
-.joe-blog-page .joe-blog-nav > button,
+.joe-blog-page .joe-blog-nav > :is(button, a),
 .joe-blog-page .joe-blog-dropdown-wrap > button { font-size: 15px; }
-.joe-blog-page .joe-blog-dropdown button { font-size: 14px; }
+.joe-blog-page .joe-blog-dropdown :is(button, a) { font-size: 14px; }
 .joe-blog-page .joe-blog-search input,
 .joe-blog-page .joe-blog-search input::placeholder { font-size: 14px; }
 .joe-blog-page .joe-publish-button.ant-btn { font-size: 13px; }
@@ -3935,7 +3935,7 @@ img {
 .joe-blog-page .joe-quick-link em { font-size: 12px; }
 .joe-blog-page .joe-section-heading .joe-section-kicker { font-size: 13px; }
 .joe-blog-page .joe-section-heading h2 { font-size: 22px; }
-.joe-blog-page .joe-section-heading > button { font-size: 13px; }
+.joe-blog-page .joe-section-heading > :is(button, a) { font-size: 13px; }
 .joe-blog-page .joe-hot-card h3 { font-size: 16px; }
 .joe-blog-page .joe-card-tags span { font-size: 11px; }
 .joe-blog-page .joe-card-meta,
@@ -3950,7 +3950,7 @@ img {
 .joe-blog-page .joe-sidebar-author-content > p,
 .joe-blog-page .joe-sidebar-notice,
 .joe-blog-page .joe-sidebar-progress-item > div,
-.joe-blog-page .joe-sidebar-category-list button { font-size: 12px; }
+.joe-blog-page .joe-sidebar-category-list :is(button, a) { font-size: 12px; }
 .joe-blog-page .joe-sidebar-hot-list strong { font-size: 12px; }
 .joe-blog-page .joe-sidebar-hot-list em,
 .joe-blog-page .joe-sidebar-tags button { font-size: 11px; }
@@ -3967,7 +3967,7 @@ img {
 .joe-blog-page .joe-post-article-label,
 .joe-blog-page .joe-post-tags > span,
 .joe-blog-page .joe-post-copyright { font-size: 12px; }
-.joe-blog-page .joe-post-article-label button,
+.joe-blog-page .joe-post-article-label :is(button, a),
 .joe-blog-page .joe-post-tags button { font-size: 11px; }
 .joe-blog-page .joe-post-content .markdown-body { font-size: 16px; }
 .joe-blog-page .joe-post-content .markdown-body pre code { font-size: 13px; }
@@ -3976,7 +3976,7 @@ img {
 .joe-blog-page .joe-post-author-mini span { font-size: 12px; }
 
 @media (max-width: 680px) {
-  .joe-blog-page .joe-blog-nav > button,
+  .joe-blog-page .joe-blog-nav > :is(button, a),
   .joe-blog-page .joe-blog-dropdown-wrap > button { font-size: 14px; }
   .joe-blog-page .joe-blog-search input,
   .joe-blog-page .joe-blog-search input::placeholder { font-size: 13px; }
@@ -3992,7 +3992,7 @@ img {
 }
 
 @media (max-width: 500px) {
-  .joe-blog-page .joe-blog-nav > button,
+  .joe-blog-page .joe-blog-nav > :is(button, a),
   .joe-blog-page .joe-blog-dropdown-wrap > button { font-size: 13px; }
   .joe-blog-page .joe-quick-link strong { font-size: 12px; }
   .joe-blog-page .joe-quick-link em { font-size: 10px; }
@@ -5313,20 +5313,20 @@ textarea.article-markdown-input,
     display: none;
   }
 
-  .joe-blog-nav > button,
+  .joe-blog-nav > :is(button, a),
   .joe-blog-dropdown-wrap > button {
     height: 36px;
     padding: 0 10px;
     font-size: 13px;
   }
 
-  .joe-blog-nav > button span,
+  .joe-blog-nav > :is(button, a) span,
   .joe-blog-dropdown-wrap > button span,
   .joe-blog-nav-arrow {
     display: inline;
   }
 
-  .joe-blog-nav > button::after,
+  .joe-blog-nav > :is(button, a)::after,
   .joe-blog-dropdown-wrap > button::after {
     right: 8px;
     left: 8px;
@@ -5747,5 +5747,332 @@ textarea.article-markdown-input,
 
   .joe-archive-page .joe-archive-layout > .joe-blog-sidebar {
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   文章页视觉与 SEO 增强层
+   仅调整呈现方式，不改动任何数据请求与业务逻辑。
+   A. 文章头图：双层遮罩 + 信息胶囊化，让标题/摘要/元信息在任何封面图上都清晰
+   B. 文章目录：字号 11px 提升到 14px，补齐行距、悬停、当前章节高亮与滚动区
+   C. 站内链接：为 <a href> 形式的入口补齐颜色与光标，形成可被爬虫跟踪的链接图
+   ========================================================================== */
+
+/* ---------------------------- A. 文章头图 ---------------------------- */
+
+/* 原封面图不透明度 0.82 且遮罩过弱，导致封面自带的超大文字水印与标题互相干扰。
+   这里改为「横向压暗标题区 + 纵向压暗底部信息区」的双层遮罩，并轻微降饱和弱化水印。 */
+.joe-blog-page .joe-post-hero {
+  min-height: 330px;
+  box-shadow: 0 14px 34px rgba(24, 58, 128, 0.16);
+}
+
+/* 封面多是带大字水印的宣传图，标题直接压上去会互相抢视觉。
+   这里压低图片存在感让它退成一层纹理，深色底交给渐变提供，标题对比度更稳定。 */
+.joe-blog-page .joe-post-hero-image {
+  opacity: 0.46;
+  filter: saturate(0.8) contrast(0.94) blur(1px);
+  transform: scale(1.06);
+}
+
+.joe-blog-page .joe-post-hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(6, 16, 40, 0.32) 0%, rgba(6, 16, 40, 0.48) 44%, rgba(5, 12, 34, 0.94) 100%),
+    linear-gradient(100deg, rgba(6, 18, 52, 0.96) 0%, rgba(9, 28, 78, 0.9) 40%, rgba(13, 38, 96, 0.74) 72%, rgba(16, 46, 112, 0.58) 100%);
+}
+
+.joe-blog-page .joe-post-hero-content {
+  min-height: 352px;
+  max-width: 820px;
+  padding: 28px 34px 32px;
+}
+
+.joe-blog-page .joe-post-breadcrumb {
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 12px;
+}
+
+/* 文章属性由裸文字改为胶囊标签，建立清晰的信息锚点。 */
+.joe-blog-page .joe-post-kicker {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 14px;
+  padding: 3px 11px;
+  color: #eef6ff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+}
+
+.joe-blog-page .joe-post-hero h1 {
+  max-width: 100%;
+  margin: 12px 0 10px;
+  font-size: clamp(24px, 3.2vw, 38px);
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 6px rgba(3, 10, 30, 0.6), 0 14px 34px rgba(3, 10, 30, 0.38);
+}
+
+.joe-blog-page .joe-post-hero-content > p {
+  max-width: 640px;
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13.5px;
+  line-height: 1.8;
+  text-shadow: 0 1px 5px rgba(3, 10, 30, 0.55);
+}
+
+/* 元信息胶囊化，避免小字直接压在封面水印上而糊成一片。 */
+.joe-blog-page .joe-post-meta {
+  gap: 8px;
+}
+
+.joe-blog-page .joe-post-meta > span {
+  padding: 5px 11px;
+  color: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+/* ---------------------------- B. 文章目录 ---------------------------- */
+
+.joe-blog-page .joe-post-toc {
+  padding: 16px 16px 14px;
+}
+
+.joe-blog-page .joe-post-toc .joe-sidebar-title {
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+/* 原目录正文仅 11px、三级标题 10px，阅读负担过重。
+   这里改为「序号列 + 文本列」的网格：序号固定宽度、右对齐，
+   高亮覆盖整行（含序号）而不是只覆盖文字，序号不会游离在高亮块之外。 */
+.joe-blog-page .joe-post-toc ol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: min(62vh, 560px);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  counter-reset: joe-toc;
+  color: var(--joe-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.joe-blog-page .joe-post-toc ol::-webkit-scrollbar {
+  width: 4px;
+}
+
+.joe-blog-page .joe-post-toc ol::-webkit-scrollbar-thumb {
+  background: rgba(47, 128, 237, 0.3);
+  border-radius: 2px;
+}
+
+.joe-blog-page .joe-post-toc li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: start;
+  padding: 0;
+  counter-increment: joe-toc;
+  line-height: 1.6;
+  border-radius: 6px;
+  transition: background-color 180ms ease;
+}
+
+/* 序号用计数器绘制，宽度、字号、配色统一可控，两位数字也能对齐。 */
+.joe-blog-page .joe-post-toc li::before {
+  content: counter(joe-toc) ".";
+  grid-column: 1;
+  padding-top: 7px;
+  color: #9db8dd;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.joe-blog-page .joe-post-toc li::marker {
+  content: none;
+}
+
+.joe-blog-page .joe-post-toc li.level-2 {
+  font-size: 15px;
+}
+
+.joe-blog-page .joe-post-toc li.level-3 {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.joe-blog-page .joe-post-toc li span,
+.joe-blog-page .joe-post-toc li button,
+.joe-blog-page .joe-post-toc li a {
+  grid-column: 2;
+  width: 100%;
+  padding: 6px 8px;
+  color: var(--joe-text);
+  font-size: inherit;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+/* 长标题允许完整换行，避免被截成省略号后目录里分不清是哪个小节。 */
+.joe-blog-page .joe-post-toc li span {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
+/* 悬停与当前阅读位置都高亮整行，序号同步着色。 */
+.joe-blog-page .joe-post-toc li:hover,
+.joe-blog-page .joe-post-toc li:focus-within {
+  background: rgba(47, 128, 237, 0.07);
+}
+
+.joe-blog-page .joe-post-toc li.is-active {
+  background: rgba(47, 128, 237, 0.13);
+}
+
+.joe-blog-page .joe-post-toc li:hover button,
+.joe-blog-page .joe-post-toc li:hover a,
+.joe-blog-page .joe-post-toc li:focus-within button {
+  color: var(--joe-theme);
+}
+
+.joe-blog-page .joe-post-toc li.is-active::before {
+  color: var(--joe-theme);
+}
+
+/* 当前阅读位置高亮，由 ArticleDetail 的滚动监听写入 is-active。 */
+.joe-blog-page .joe-post-toc li.is-active > button,
+.joe-blog-page .joe-post-toc li.is-active > a {
+  color: var(--joe-theme);
+  font-weight: 600;
+  background: transparent;
+}
+
+.joe-blog-page .joe-post-toc > p {
+  font-size: 13px;
+}
+
+/* ------------------------ C. 站内真实链接外观 ------------------------ */
+
+/* 首页/归档/相关文章卡片整体作为链接：卡片内放置覆盖式 <Link> 承载真实 href，
+   爬虫可跟踪、键盘可聚焦，同时保留原卡片的全部视觉效果。 */
+.joe-hot-card,
+.joe-latest-item,
+.joe-archive-item,
+.joe-post-related-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.joe-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+}
+
+/* 链接文本只供爬虫与读屏软件识别，不重复渲染标题。 */
+.joe-card-link-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
+}
+
+/* 全局规则 .joe-blog-page a 会把链接强制染成主题蓝，这里为卡片/导航类链接还原继承色。 */
+.joe-blog-page a.joe-blog-brand,
+.joe-blog-page a.joe-hot-card,
+.joe-blog-page a.joe-latest-item,
+.joe-blog-page a.joe-archive-item,
+.joe-blog-page a.joe-post-related-card,
+.joe-blog-page .joe-sidebar-hot-list a,
+.joe-blog-page .joe-blog-category-dropdown a,
+.joe-blog-page a.joe-article-pager {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.joe-blog-page .joe-post-actions a.ant-btn {
+  text-decoration: none;
+}
+
+/* ---------------------------- 响应式 ---------------------------- */
+
+@media (max-width: 900px) {
+  .joe-blog-page .joe-post-hero,
+  .joe-blog-page .joe-post-hero-content {
+    min-height: 340px;
+  }
+
+  .joe-blog-page .joe-post-hero-content {
+    padding: 24px 26px 26px;
+  }
+}
+
+@media (max-width: 640px) {
+  .joe-blog-page .joe-post-hero,
+  .joe-blog-page .joe-post-hero-content {
+    min-height: 300px;
+  }
+
+  .joe-blog-page .joe-post-hero-content {
+    padding: 20px 18px 22px;
+  }
+
+  .joe-blog-page .joe-post-hero h1 {
+    margin: 10px 0 8px;
+    font-size: 23px;
+  }
+
+  .joe-blog-page .joe-post-hero-content > p {
+    margin-bottom: 12px;
+    font-size: 12.5px;
+  }
+
+  .joe-blog-page .joe-post-meta {
+    gap: 6px;
+  }
+
+  .joe-blog-page .joe-post-meta > span {
+    padding: 4px 9px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 420px) {
+  .joe-blog-page .joe-post-hero,
+  .joe-blog-page .joe-post-hero-content {
+    min-height: 280px;
+  }
+
+  .joe-blog-page .joe-post-hero h1 {
+    font-size: 21px;
   }
 }

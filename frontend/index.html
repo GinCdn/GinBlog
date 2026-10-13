@@ -3,11 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-  <title>GinBlog - 博客系统</title>
+
+  <!--
+    基础 SEO。
+
+    占位符（__SITE_NAME__ 等）会在构建时由 scripts/seo-lib.mjs 按「.env 配置 -> 站点配置接口
+    自动识别 -> 通用兜底」注入，因此同一份源码部署到任意域名都能产出正确的元信息，
+    请不要在这里写死具体域名或站点名称。文章页渲染后会把标题/描述覆盖为文章自身信息。
+  -->
+  <title>__SITE_TITLE__</title>
+  <meta name="description" content="__SITE_DESCRIPTION__" />
+  <meta name="keywords" content="__SITE_KEYWORDS__" />
+  <meta name="author" content="__SITE_NAME__" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="googlebot" content="index,follow" />
+  <meta name="theme-color" content="#2f80ed" />
+  <meta name="format-detection" content="telephone=no" />
+  <!-- 在百度搜索资源平台完成站点验证后，把校验串写入 .env 的 VITE_BAIDU_VERIFICATION 即可。 -->
+  <meta name="baidu-site-verification" content="__BAIDU_VERIFICATION__" />
+
+  <!-- 社交平台分享卡片 -->
+  <meta property="og:site_name" content="__SITE_NAME__" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="__SITE_TITLE__" />
+  <meta property="og:description" content="__SITE_DESCRIPTION__" />
+  <meta property="og:url" content="__SITE_URL__/" />
+  <meta property="og:image" content="__SITE_LOGO__" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="__SITE_TITLE__" />
+  <meta name="twitter:description" content="__SITE_DESCRIPTION__" />
+
+  <!-- 站点地址未配置时退化为相对路径，路由切换后由 App 用当前 origin 修正为自指地址。 -->
+  <link rel="canonical" href="__SITE_URL__/" />
+
+  <link rel="icon" type="image/png" href="/favicon.ico" />
+
+  <!-- 站点级结构化数据：搜索引擎可据此识别站点名称与站内搜索入口。
+       data-seo-site 供运行时按当前访问域名纠正其中的绝对地址。 -->
+  <script type="application/ld+json" data-seo-site>
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "__SITE_URL__/#website",
+        "url": "__SITE_URL__/",
+        "name": "__SITE_NAME__",
+        "description": "__SITE_DESCRIPTION__",
+        "inLanguage": "zh-CN",
+        "publisher": { "@id": "__SITE_URL__/#organization" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "__SITE_URL__/articles?title={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "__SITE_URL__/#organization",
+        "name": "__SITE_NAME__",
+        "url": "__SITE_URL__/",
+        "logo": "__SITE_LOGO__",
+        "email": "__SITE_EMAIL__"
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div id="root"></div>
+
+  <!--
+    无脚本兜底内容：单页应用在未执行 JS 时首屏为空，
+    这里提供站点简介与栏目入口，供不执行 JS 的爬虫抓取与跟踪链接。
+    栏目列表由构建流程按该站点的真实分类生成，同样不含写死的域名。
+  -->
+  <noscript>
+    <h1>__SITE_NAME__ - __SITE_SUBTITLE__</h1>
+    <p>__SITE_DESCRIPTION__</p>
+    <h2>主要栏目</h2>
+    <ul>
+__NOSCRIPT_NAV__
+    </ul>
+  </noscript>
+
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

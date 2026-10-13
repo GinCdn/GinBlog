@@ -18,7 +18,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons'
 import { Button, Empty, Form, Input, message, Modal, Popover, Radio, Skeleton, Space } from 'antd'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { publicApi, userApi } from '@/api'
 import BlogArticleCover from '@/components/BlogArticleCover'
 import BlogFooter from '@/components/BlogFooter'
@@ -30,7 +30,8 @@ import { maskArticleHiddenContent } from '@/utils/articleContent'
 import { getQQAvatarUrl } from '@/utils/avatar'
 import type { Article, Category, Comment, PageResponse } from '@/types'
 import { formatBlogDate, getArticleAuthor, getArticleAuthorQQ, getArticleCover, getArticleExcerpt, getArticleTagNames, getCategoryPath, getChineseSiteText } from '@/utils/blog'
-import { extractMarkdownHeadings } from '@/utils/markdown'
+import { extractMarkdownHeadings, stripDuplicateLeadingTitle } from '@/utils/markdown'
+import { fetchArticleDetail, prefetchArticleRoute } from '@/utils/articlePrefetch'
 
 interface HeadingItem {
   title: string
@@ -49,6 +50,16 @@ function toBoolean(value: unknown): boolean {
   if (typeof value === 'number') return value !== 0
   if (typeof value === 'string') return ['true', '1', 'yes', 'on'].includes(value.trim().toLowerCase())
   return false
+}
+
+/** 把后端的北京时间字符串转换为结构化数据要求的 ISO 8601 格式。 */
+function toIsoDateTime(value?: string): string | undefined {
+  if (!value) return undefined
+  const matched = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/.exec(value.trim())
+  const parsed = matched
+    ? new Date(`${matched[1]}-${matched[2]}-${matched[3]}T${matched[4]}:${matched[5]}:${matched[6]}+08:00`)
+    : new Date(value)
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString()
 }
 
 /** 将分类树整理为文章侧栏可直接展示的分类列表。 */
@@ -217,6 +228,7 @@ export default function ArticleDetail() {
   const [replyTargetId, setReplyTargetId] = useState<number | null>(null)
   const [loggedIn, setLoggedIn] = useState(() => Boolean(getToken('user')))
   const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [activeHeadingId, setActiveHeadingId] = useState('')
 
   const articleId = Number(params.id)
   const loadComments = useCallback(async (id: number) => {
@@ -251,36 +263,49 @@ export default function ArticleDetail() {
     }
   }, [])
 
-  const loadArticle = useCallback(async () => {
+  /**
+   * 加载文章详情。
+   * preferCache 仅用于「首屏进入」场景：复用 main.tsx 提前发起的预取结果，缩短正文出现时间；
+   * 支付回跳、评论提交等需要最新数据的场景保持默认值，直接请求接口。
+   */
+  const loadArticle = useCallback(async (preferCache = false) => {
     if (!Number.isFinite(articleId) || articleId <= 0) return
     setLoading(true)
     setArticle(undefined)
     try {
-      const result = await publicApi.getArticleDetail(articleId)
+      const result = preferCache ? await fetchArticleDetail(articleId) : await publicApi.getArticleDetail(articleId)
       const current = extractArticle(result.data)
       if (!current) {
         setArticle(undefined)
         setRelatedArticles([])
         return
       }
+      // 正文先渲染，不再等待访问状态接口，首屏正文提前一个网络往返出现。
+      setArticle(current)
+      setLoading(false)
+
+      // 访问状态（价格/折扣/解锁）与同分类文章互不依赖，改为并行请求。
+      const [accessSettled, relatedSettled] = await Promise.allSettled([
+        publicApi.getArticleAccess(current.id),
+        publicApi.getArticles({ page: 1, page_size: 20, category_id: current.categoryId }),
+      ])
+
       // 文章详情接口负责正文，访问状态接口负责价格、折扣和解锁状态。
       // 两个接口分工兼容旧后端，也避免详情接口未附带访问字段时不显示购买面板。
       let merged = current
-      try {
-        const accessResult = await publicApi.getArticleAccess(current.id)
-        merged = mergeArticleAccess(current, accessResult.data)
-      } catch {
+      if (accessSettled.status === 'fulfilled') {
         // 访问状态接口失败时保留详情接口数据，公开文章仍可正常阅读。
+        merged = mergeArticleAccess(current, accessSettled.value.data)
+        setArticle(merged)
       }
-      setArticle(merged)
-      const accessType = merged.accessType || 'public'
-      if (accessType !== 'hidden' && (accessType === 'comment' || merged.isUnlocked)) await loadComments(merged.id)
-      try {
-        const relatedResult = await publicApi.getArticles({ page: 1, page_size: 20, category_id: merged.categoryId })
-        setRelatedArticles((relatedResult.data?.list || []).filter((item) => item.id !== merged.id).slice(0, 3))
-      } catch {
+      if (relatedSettled.status === 'fulfilled') {
+        setRelatedArticles((relatedSettled.value.data?.list || []).filter((item) => item.id !== merged.id).slice(0, 3))
+      } else {
         setRelatedArticles([])
       }
+
+      const accessType = merged.accessType || 'public'
+      if (accessType !== 'hidden' && (accessType === 'comment' || merged.isUnlocked)) await loadComments(merged.id)
     } catch {
       setArticle(undefined)
       setRelatedArticles([])
@@ -289,7 +314,7 @@ export default function ArticleDetail() {
     }
   }, [articleId, loadComments])
 
-  useEffect(() => { void loadArticle() }, [loadArticle])
+  useEffect(() => { void loadArticle(true) }, [loadArticle])
 
   useEffect(() => {
     const paymentStatus = searchParams.get('payment')
@@ -320,21 +345,39 @@ export default function ArticleDetail() {
 
   useEffect(() => {
     if (!article) return
-    const title = `${article.title} - ${getChineseSiteText(siteConfig?.title, 'GinBlog博客系统')}`
+    const siteName = getChineseSiteText(siteConfig?.title, 'GinBlog博客系统')
+    const title = `${article.title} - ${siteName}`
     const description = article.description?.trim() || getArticleExcerpt(article, 170)
     const keywords = article.keywords?.trim() || siteConfig?.keywords?.trim() || ''
     const cover = getArticleCover(article)
     const coverUrl = cover ? new URL(cover, window.location.origin).href : ''
+    const siteLogo = siteConfig?.logo?.trim()
+    // 结构化数据与 og:url 统一使用规范地址，避免带查询参数的地址被重复收录。
+    const pageUrl = `${window.location.origin}/articles/${article.id}`
+    const published = toIsoDateTime(article.createTime)
+    const updated = toIsoDateTime((article as Article & { updateTime?: string }).updateTime) || published
+    const categoryPath = article.category ? getCategoryPath(article.category) : ''
     document.title = title
     const values: Array<[string, string, string]> = [
       ['name', 'description', description],
       ['name', 'keywords', keywords],
+      ['property', 'og:site_name', siteName],
+      ['property', 'og:locale', 'zh_CN'],
       ['property', 'og:title', title],
       ['property', 'og:description', description],
       ['property', 'og:type', 'article'],
-      ['property', 'og:url', window.location.href],
+      ['property', 'og:url', pageUrl],
+      ['name', 'twitter:card', coverUrl ? 'summary_large_image' : 'summary'],
+      ['name', 'twitter:title', title],
+      ['name', 'twitter:description', description],
     ]
-    if (coverUrl) values.push(['property', 'og:image', coverUrl])
+    if (coverUrl) {
+      values.push(['property', 'og:image', coverUrl])
+      values.push(['name', 'twitter:image', coverUrl])
+    }
+    if (published) values.push(['property', 'article:published_time', published])
+    if (updated) values.push(['property', 'article:modified_time', updated])
+    if (article.category?.name) values.push(['property', 'article:section', article.category.name])
     const elements = values.filter(([, , content]) => content).map(([attribute, key, content]) => {
       let element = document.head.querySelector(`meta[data-ginblog-seo="article"][${attribute}="${key}"]`) as HTMLMetaElement | null
       if (!element) {
@@ -346,16 +389,118 @@ export default function ArticleDetail() {
       element.content = content
       return element
     })
-    return () => { elements.forEach((element) => element.remove()) }
-  }, [article, siteConfig?.keywords, siteConfig?.title])
 
-  const headings = useMemo(() => getHeadings(article?.content || ''), [article?.content])
+    // 正文结构化数据：帮助搜索引擎识别标题、作者、发布时间、分类与面包屑层级。
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Article',
+          '@id': `${pageUrl}#article`,
+          headline: article.title,
+          description,
+          mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+          inLanguage: 'zh-CN',
+          author: { '@type': 'Person', name: getArticleAuthor(article) },
+          publisher: {
+            '@type': 'Organization',
+            name: siteName,
+            ...(siteLogo ? { logo: { '@type': 'ImageObject', url: siteLogo } } : {}),
+          },
+          ...(coverUrl ? { image: [coverUrl] } : {}),
+          ...(published ? { datePublished: published } : {}),
+          ...(updated ? { dateModified: updated } : {}),
+          ...(article.category?.name ? { articleSection: article.category.name } : {}),
+          ...(keywords ? { keywords } : {}),
+          ...(article.viewCount
+            ? {
+                interactionStatistic: {
+                  '@type': 'InteractionCounter',
+                  interactionType: 'https://schema.org/WatchAction',
+                  userInteractionCount: article.viewCount,
+                },
+              }
+            : {}),
+        },
+        {
+          '@type': 'BreadcrumbList',
+          '@id': `${pageUrl}#breadcrumb`,
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: '首页', item: `${window.location.origin}/` },
+            { '@type': 'ListItem', position: 2, name: '文章', item: `${window.location.origin}/articles` },
+            ...(article.category?.name && categoryPath
+              ? [{ '@type': 'ListItem', position: 3, name: article.category.name, item: `${window.location.origin}${categoryPath}` }]
+              : []),
+            {
+              '@type': 'ListItem',
+              position: article.category?.name ? 4 : 3,
+              name: article.title,
+              item: pageUrl,
+            },
+          ],
+        },
+      ],
+    }
+    let script = document.head.querySelector('script[data-ginblog-seo="article-jsonld"]') as HTMLScriptElement | null
+    if (!script) {
+      script = document.createElement('script')
+      script.type = 'application/ld+json'
+      script.setAttribute('data-ginblog-seo', 'article-jsonld')
+      document.head.appendChild(script)
+    }
+    script.textContent = JSON.stringify(structuredData)
+
+    return () => {
+      elements.forEach((element) => element.remove())
+      script?.remove()
+    }
+  }, [article, siteConfig?.keywords, siteConfig?.logo, siteConfig?.title])
+
+  // 正文首行若与文章标题重复（编辑器习惯把标题也写进正文），渲染前剥离，
+  // 避免标题在首屏出现两遍，同时让目录第一项回归真正的正文小节。
+  const articleContent = useMemo(
+    () => stripDuplicateLeadingTitle(article?.content || '', article?.title),
+    [article?.content, article?.title],
+  )
+  const headings = useMemo(() => getHeadings(articleContent), [articleContent])
+
+  // 目录跟随高亮：正文标题滚动到视口上部时点亮对应目录项，两个标题之间保持上一次位置。
+  useEffect(() => {
+    if (headings.length === 0) {
+      setActiveHeadingId('')
+      return
+    }
+    // 切换文章时清掉上一篇残留的高亮，并默认点亮第一条目录。
+    setActiveHeadingId((current) => (headings.some((heading) => heading.id === current) ? current : headings[0].id))
+    const elements = headings
+      .map((heading) => document.getElementById(heading.id))
+      .filter((element): element is HTMLElement => Boolean(element))
+    if (elements.length === 0) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const next = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => left.boundingClientRect.top - right.boundingClientRect.top)[0]?.target.id
+        if (next) setActiveHeadingId(next)
+      },
+      { rootMargin: '-96px 0px -68% 0px', threshold: 0 },
+    )
+    elements.forEach((element) => observer.observe(element))
+    return () => observer.disconnect()
+  }, [headings])
   const commentTree = useMemo(() => buildCommentTree(comments), [comments])
   const replyTarget = useMemo(() => (replyTargetId ? comments.find((comment) => comment.id === replyTargetId) : undefined), [comments, replyTargetId])
   const articleCategories = useMemo(() => flattenArticleCategories(categories, expandedCategoryIds), [categories, expandedCategoryIds])
   const cover = article ? getArticleCover(article) : undefined
   const tags = article ? getArticleTagNames(article) : []
   const description = article?.description?.trim() || (article ? getArticleExcerpt(article, 170) : '')
+  // 摘要常与标题写成同一句话，重复渲染会让人以为页面出错，这里仅在两处内容不同时展示。
+  const heroDescription = useMemo(() => {
+    const text = description.trim()
+    if (!text || !article) return text
+    const compact = (value: string) => value.replace(/[^\p{L}\p{N}]+/gu, '').toLowerCase()
+    return compact(text) === compact(article.title) ? '' : text
+  }, [description, article])
   const accessType = article?.accessType || 'public'
   const isUnlocked = Boolean(article && (accessType === 'public' || article.isUnlocked))
   const hasPartialPaidContent = Boolean((article?.hasPaidContent || hasPaidHiddenBlock(article?.content || '')) && !article?.paidContentUnlocked)
@@ -741,20 +886,33 @@ export default function ArticleDetail() {
           {article ? (
             <>
               <section className="joe-post-hero">
-                {cover && <img className="joe-post-hero-image" src={cover} alt={`${article.title}的封面图`} />}
+                {cover && (
+                  <img
+                    className="joe-post-hero-image"
+                    src={cover}
+                    alt={`${article.title}的封面图`}
+                    decoding="async"
+                    fetchPriority="high"
+                  />
+                )}
                 <div className="joe-post-hero-overlay" />
                 <div className="joe-post-hero-content">
                   <div className="joe-post-breadcrumb">
-                    <button type="button" onClick={() => navigate('/')}><HomeOutlined /> 首页</button>
+                    <Link to="/"><HomeOutlined /> 首页</Link>
                     <span>/</span>
-                    <button type="button" onClick={() => navigate('/articles')}>文章</button>
-                    {article.category && <><span>/</span><span>{article.category.name}</span></>}
+                    <Link to="/articles">文章</Link>
+                    {article.category && (
+                      <>
+                        <span>/</span>
+                        <Link to={getCategoryPath(article.category)}>{article.category.name}</Link>
+                      </>
+                    )}
                   </div>
                   <span className="joe-post-kicker">
                     {accessType === 'paid' ? '付费阅读' : accessType === 'comment' ? '评论阅读' : accessType === 'hidden' ? '隐藏文章' : '公开文章'}
                   </span>
                   <h1>{article.title}</h1>
-                  <p>{description}</p>
+                  {heroDescription && <p>{heroDescription}</p>}
                   <div className="joe-post-meta">
                     <span className="joe-post-author-meta">
                       {getArticleAuthorQQ(article) ? (
@@ -776,15 +934,15 @@ export default function ArticleDetail() {
                     <ReadOutlined />
                     <span>正文</span>
                     {article.category && (
-                      <button type="button" onClick={() => navigate(getCategoryPath(article.category || { cid: article.categoryId }))}>
+                      <Link to={getCategoryPath(article.category || { cid: article.categoryId })}>
                         <FolderOpenOutlined /> {article.category.name}
-                      </button>
+                      </Link>
                     )}
                   </div>
                   {renderAccessPanel()}
                   {isUnlocked && (
                     <div className="joe-post-content">
-                      <MarkdownRenderer content={article.content || ''} />
+                      <MarkdownRenderer content={articleContent} />
                     </div>
                   )}
                   {accessType === 'comment' && !isUnlocked && (
@@ -834,17 +992,34 @@ export default function ArticleDetail() {
                   {renderCommentSection()}
                   <div className="joe-post-actions">
                     <Button
+                      className="joe-article-pager"
                       icon={<ArrowLeftOutlined />}
+                      href={article.previous ? `/articles/${article.previous.id}` : undefined}
                       disabled={!article.previous}
-                      onClick={() => article.previous && navigate(`/articles/${article.previous.id}`)}
+                      onMouseEnter={() => article.previous && prefetchArticleRoute(article.previous.id)}
+                      onFocus={() => article.previous && prefetchArticleRoute(article.previous.id)}
+                      onClick={(event) => {
+                        if (!article.previous) return
+                        // 阻止默认整页跳转，保留单页应用体验；href 仍供爬虫跟踪。
+                        event.preventDefault()
+                        navigate(`/articles/${article.previous.id}`)
+                      }}
                     >
                       <span>上一篇</span>
                       {article.previous && <strong>{article.previous.title}</strong>}
                     </Button>
                     <Button
+                      className="joe-article-pager"
                       icon={<ArrowRightOutlined />}
+                      href={article.next ? `/articles/${article.next.id}` : undefined}
                       disabled={!article.next}
-                      onClick={() => article.next && navigate(`/articles/${article.next.id}`)}
+                      onMouseEnter={() => article.next && prefetchArticleRoute(article.next.id)}
+                      onFocus={() => article.next && prefetchArticleRoute(article.next.id)}
+                      onClick={(event) => {
+                        if (!article.next) return
+                        event.preventDefault()
+                        navigate(`/articles/${article.next.id}`)
+                      }}
                     >
                       <span>下一篇</span>
                       {article.next && <strong>{article.next.title}</strong>}
@@ -857,11 +1032,19 @@ export default function ArticleDetail() {
                       </div>
                       <div className="joe-post-related-grid">
                         {relatedArticles.map((item, index) => (
-                          <button type="button" className="joe-post-related-card" key={item.id} onClick={() => navigate(`/articles/${item.id}`)}>
+                          <div className="joe-post-related-card" key={item.id}>
                             <BlogArticleCover article={item} index={index + 3} />
                             <strong>{item.title}</strong>
                             <span>{item.viewCount || 0} 次阅读</span>
-                          </button>
+                            <Link
+                              className="joe-card-link"
+                              to={`/articles/${item.id}`}
+                              onMouseEnter={() => prefetchArticleRoute(item.id)}
+                              onFocus={() => prefetchArticleRoute(item.id)}
+                            >
+                              <span className="joe-card-link-text">{item.title}</span>
+                            </Link>
+                          </div>
                         ))}
                       </div>
                     </section>
@@ -873,7 +1056,10 @@ export default function ArticleDetail() {
                     {headings.length > 0 ? (
                       <ol>
                         {headings.map((heading, index) => (
-                          <li className={`level-${heading.level}`} key={`${heading.id}-${index}`}>
+                          <li
+                            className={`level-${heading.level}${activeHeadingId === heading.id ? ' is-active' : ''}`}
+                            key={`${heading.id}-${index}`}
+                          >
                             <button
                               type="button"
                               onClick={() => {

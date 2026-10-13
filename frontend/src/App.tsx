@@ -1,6 +1,6 @@
 /** 应用路由，仅注册后端已实现的业务页面。 */
 import { lazy, Suspense, useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useAppStore } from '@/store'
 import { isAuthenticated } from '@/utils/auth'
 import Home from '@/pages/Home'
@@ -53,8 +53,26 @@ function UserRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   const loadSiteConfig = useAppStore((state) => state.loadSiteConfig)
   const siteConfigLoaded = useAppStore((state) => state.siteConfigLoaded)
+  const location = useLocation()
 
   useEffect(() => { loadSiteConfig() }, [loadSiteConfig])
+
+  // 每个路由保持自指 canonical：文章页/分类页指向自身路径，
+  // 带查询参数（搜索词、分页）的页面归一到无参数路径，避免被判为重复内容。
+  useEffect(() => {
+    const path = location.pathname.replace(/\/+$/, '') || '/'
+    const selfUrl = `${window.location.origin}${path}`
+    let canonical = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.rel = 'canonical'
+      document.head.appendChild(canonical)
+    }
+    canonical.href = selfUrl
+    // 分享卡片地址保持自指，避免分享出去的链接指向首页。
+    const ogUrl = document.head.querySelector('meta[property="og:url"]') as HTMLMetaElement | null
+    if (ogUrl) ogUrl.content = selfUrl
+  }, [location.pathname])
 
   // 站点配置加载完成后再渲染页面，避免默认配置闪现。
   if (!siteConfigLoaded) {

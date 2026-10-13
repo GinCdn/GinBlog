@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# 环境配置：.env 保存各站点自己的域名与 SEO 文案，不进入版本库；模板 .env.example 需要提交。
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

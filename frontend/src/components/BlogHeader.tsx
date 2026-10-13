@@ -15,7 +15,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons'
 import { Button } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { publicApi } from '@/api'
 import { useAppStore } from '@/store'
 import type { Category } from '@/types'
@@ -88,11 +88,6 @@ export default function BlogHeader({ active = 'home', onSearch, searchValue = ''
     }
   }
 
-  const navigateToCategory = (category?: Category) => {
-    setCategoryMenuOpen(false)
-    navigate(category ? getCategoryPath(category) : '/articles')
-  }
-
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const value = keyword.trim()
@@ -109,16 +104,16 @@ export default function BlogHeader({ active = 'home', onSearch, searchValue = ''
   return (
     <header className="joe-blog-header">
       <div className="joe-blog-header-inner">
-        <button className="joe-blog-brand" type="button" onClick={() => navigate('/')} aria-label={`${systemName}首页`}>
+        <Link className="joe-blog-brand" to="/" aria-label={`${systemName}首页`}>
           {logo ? <img src={logo} alt={`${systemName}标志`} /> : <span className="joe-blog-logo"><ReadOutlined /></span>}
           <span className="joe-blog-brand-name">{systemName}</span>
-        </button>
+        </Link>
 
         <nav ref={navigationRef} className="joe-blog-nav" aria-label="博客导航">
-          <button className={active === 'home' ? 'is-active' : ''} type="button" onClick={() => navigate('/')}>
+          <Link className={active === 'home' ? 'is-active' : ''} to="/">
             <HomeOutlined />
             <span>首页</span>
-          </button>
+          </Link>
           <div className="joe-blog-dropdown-wrap joe-blog-category-wrap">
             <button
               className={active === 'articles' || categoryMenuOpen ? 'is-active' : ''}
@@ -133,7 +128,7 @@ export default function BlogHeader({ active = 'home', onSearch, searchValue = ''
             </button>
             {categoryMenuOpen && (
               <div className="joe-blog-dropdown joe-blog-category-dropdown" role="menu">
-                <button type="button" role="menuitem" onClick={() => navigateToCategory()}>全部文章</button>
+                <Link to="/articles" role="menuitem" onClick={() => setCategoryMenuOpen(false)}>全部文章</Link>
                 {categoryLoading ? (
                   <div className="joe-blog-dropdown-status">正在加载分类</div>
                 ) : categories.length > 0 ? (
@@ -148,9 +143,9 @@ export default function BlogHeader({ active = 'home', onSearch, searchValue = ''
                           style={{ paddingLeft: `${12 + depth * 16}px` }}
                           role="none"
                         >
-                          <button className="joe-blog-category-link" type="button" role="menuitem" onClick={() => navigateToCategory(item)}>
+                          <Link className="joe-blog-category-link" role="menuitem" to={getCategoryPath(item)} onClick={() => setCategoryMenuOpen(false)}>
                             <span>{item.name}</span>
-                          </button>
+                          </Link>
                           {children.length > 0 && (
                             <button
                               className="joe-blog-category-expand"
@@ -191,7 +186,7 @@ export default function BlogHeader({ active = 'home', onSearch, searchValue = ''
             </button>
             {otherMenuOpen && (
               <div className="joe-blog-dropdown" role="menu">
-                <button type="button" role="menuitem" onClick={() => navigate('/articles')}>文章归档</button>
+                <Link to="/articles" role="menuitem" onClick={() => setOtherMenuOpen(false)}>文章归档</Link>
                 <button type="button" role="menuitem" onClick={openUserCenter}>用户中心</button>
               </div>
             )}

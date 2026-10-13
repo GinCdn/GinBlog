@@ -13,7 +13,7 @@ import {
   RightOutlined,
 } from '@ant-design/icons'
 import { Empty, Skeleton } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { publicApi } from '@/api'
 import BlogArticleCover from '@/components/BlogArticleCover'
 import BlogFooter from '@/components/BlogFooter'
@@ -22,6 +22,7 @@ import BlogSidebar from '@/components/BlogSidebar'
 import { useAppStore } from '@/store'
 import type { Article, Category, CarouselConfig } from '@/types'
 import { flattenCategories, formatBlogDate, getArticleExcerpt, getArticleTagNames, getChineseSiteText } from '@/utils/blog'
+import { prefetchArticleRoute } from '@/utils/articlePrefetch'
 
 /** 公开博客首页，采用博客主视觉、卡片内容区和综合侧栏。 */
 export default function Home() {
@@ -158,19 +159,27 @@ export default function Home() {
             <section className="joe-home-section">
               <div className="joe-section-heading">
                 <div><span className="joe-section-kicker"><FireOutlined /> 内容精选</span><h2>热门文章</h2></div>
-                <button type="button" onClick={() => navigate('/articles')}>查看全部 <ArrowRightOutlined /></button>
+                <Link className="joe-section-more" to="/articles">查看全部 <ArrowRightOutlined /></Link>
               </div>
               <Skeleton loading={loading} active paragraph={{ rows: 5 }}>
                 {hotArticles.length > 0 ? (
                   <div className="joe-hot-grid">
                     {hotArticles.map((article, index) => (
-                      <article className="joe-hot-card" key={article.id} onClick={() => navigate(`/articles/${article.id}`)} role="link" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/articles/${article.id}`) }}>
+                      <article className="joe-hot-card" key={article.id}>
                         <div className="joe-hot-card-cover-wrap"><BlogArticleCover article={article} index={index} className="joe-hot-card-cover" /><span className="joe-hot-card-rank">{(article.viewCount || 0).toLocaleString()} 阅读</span></div>
                         <div className="joe-hot-card-body">
                           <div className="joe-card-tags">{article.category && <span>{article.category.name}</span>}{getArticleTagNames(article).slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}</div>
                           <h3>{article.title}</h3>
                           <div className="joe-card-meta"><span>{formatBlogDate(article.createTime)}</span><span><EyeOutlined /> {article.viewCount || 0}</span><span><span className="joe-card-meta-dot" /> {article.commentCount || 0}</span></div>
                         </div>
+                        <Link
+                          className="joe-card-link"
+                          to={`/articles/${article.id}`}
+                          onMouseEnter={() => prefetchArticleRoute(article.id)}
+                          onFocus={() => prefetchArticleRoute(article.id)}
+                        >
+                          <span className="joe-card-link-text">{article.title}</span>
+                        </Link>
                       </article>
                     ))}
                   </div>
@@ -181,16 +190,24 @@ export default function Home() {
             <section className="joe-home-section joe-latest-section">
               <div className="joe-section-heading">
                 <div><span className="joe-section-kicker"><CalendarOutlined /> 最新动态</span><h2>最新发布</h2></div>
-                <button type="button" onClick={() => navigate('/articles')}>文章归档 <ArrowRightOutlined /></button>
+                <Link className="joe-section-more" to="/articles">文章归档 <ArrowRightOutlined /></Link>
               </div>
               <Skeleton loading={loading} active paragraph={{ rows: 7 }}>
                 {latestArticles.length > 0 ? (
                   <div className="joe-latest-list">
                     {latestArticles.map((article, index) => (
-                      <article className="joe-latest-item" key={article.id} onClick={() => navigate(`/articles/${article.id}`)} role="link" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/articles/${article.id}`) }}>
+                      <article className="joe-latest-item" key={article.id}>
                         <BlogArticleCover article={article} index={index + 2} className="joe-latest-thumb" />
                         <div className="joe-latest-content"><div className="joe-latest-meta"><span className="joe-latest-category">{article.category?.name || '未分类'}</span><span>{formatBlogDate(article.createTime)}</span><span><EyeOutlined /> {article.viewCount || 0}</span></div><h3>{article.title}</h3><p>{getArticleExcerpt(article, 120)}</p></div>
                         <ArrowRightOutlined className="joe-latest-arrow" />
+                        <Link
+                          className="joe-card-link"
+                          to={`/articles/${article.id}`}
+                          onMouseEnter={() => prefetchArticleRoute(article.id)}
+                          onFocus={() => prefetchArticleRoute(article.id)}
+                        >
+                          <span className="joe-card-link-text">{article.title}</span>
+                        </Link>
                       </article>
                     ))}
                   </div>

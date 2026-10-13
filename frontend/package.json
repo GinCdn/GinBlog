@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/gen-seo.mjs",
+    "build:seo": "node scripts/gen-seo.mjs",
+    "seo": "node scripts/gen-seo.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

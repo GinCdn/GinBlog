@@ -59,6 +59,29 @@ export function extractMarkdownHeadings(content: string): MarkdownHeading[] {
   })
 }
 
+/** 归一化标题文本，忽略标点、空白与大小写差异，用于判断两处标题是否为同一句。 */
+function normalizeTitleForCompare(value: string): string {
+  return value.replace(/[^\p{L}\p{N}]+/gu, '').toLowerCase()
+}
+
+/**
+ * 去掉正文开头与文章标题完全重复的一级标题。
+ *
+ * 文章标题已由页面头图渲染，正文再写一次会让首屏出现两遍相同标题，
+ * 而且该标题会占用目录第一项；在渲染前统一剥离，正文与目录同时生效。
+ */
+export function stripDuplicateLeadingTitle(content: string, title?: string): string {
+  const expected = normalizeTitleForCompare(title || '')
+  if (!expected) return content
+  const lines = content.split(/\r?\n/)
+  let index = 0
+  while (index < lines.length && !lines[index].trim()) index += 1
+  const matched = /^#\s+(.+?)\s*#*\s*$/.exec((lines[index] || '').trim())
+  if (!matched) return content
+  if (normalizeTitleForCompare(normalizeHeadingText(matched[1])) !== expected) return content
+  return [...lines.slice(0, index), ...lines.slice(index + 1)].join('\n')
+}
+
 /** 将 React Markdown 标题节点转换为纯文本，供目录锚点生成使用。 */
 export function getReactNodeText(node: ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') return String(node)

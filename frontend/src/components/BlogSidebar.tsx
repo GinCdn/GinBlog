@@ -9,7 +9,7 @@ import {
   TagOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAppStore } from '@/store'
 import type { Article, Category } from '@/types'
 import { getArticleTagNames, getCategoryPath, getChineseSiteText } from '@/utils/blog'
@@ -119,10 +119,10 @@ export default function BlogSidebar({
         <div className="joe-sidebar-title"><FireOutlined /><span>热门文章</span></div>
         <div className="joe-sidebar-hot-list">
           {sortedArticles.length > 0 ? sortedArticles.map((article, index) => (
-            <button key={article.id} type="button" onClick={() => navigate(`/articles/${article.id}`)}>
+            <Link key={article.id} className="joe-sidebar-hot-item" to={`/articles/${article.id}`}>
               <span className="joe-sidebar-hot-index">{String(index + 1).padStart(2, '0')}</span>
               <span><strong>{article.title}</strong><em>{article.viewCount || 0} 次阅读</em></span>
-            </button>
+            </Link>
           )) : <p className="joe-sidebar-empty">暂无热门文章</p>}
         </div>
       </section>
@@ -130,9 +130,13 @@ export default function BlogSidebar({
       <section className="joe-sidebar-card joe-sidebar-lines-card">
         <div className="joe-sidebar-title"><FolderOpenOutlined /><span>文章分类</span></div>
         <div className="joe-sidebar-category-list">
-          <button className={activeCategory === undefined ? 'is-active' : ''} type="button" onClick={() => selectCategory()}>
+          <Link
+            className={activeCategory === undefined ? 'is-active' : ''}
+            to="/articles"
+            onClick={onCategorySelect ? (event) => { event.preventDefault(); selectCategory() } : undefined}
+          >
             <span>全部文章</span><em>{articleCount ?? articles.length}</em>
-          </button>
+          </Link>
           {categoryItems.map(({ category, depth, hasChildren }) => {
             const expanded = expandedCategoryIds.includes(category.cid)
             return (
@@ -141,9 +145,13 @@ export default function BlogSidebar({
                 key={category.cid}
                 style={depth > 0 ? { paddingLeft: `${depth * 14}px` } : undefined}
               >
-                <button className="joe-sidebar-category-link" type="button" onClick={() => selectCategory(category)}>
+                <Link
+                  className="joe-sidebar-category-link"
+                  to={getCategoryPath(category)}
+                  onClick={onCategorySelect ? (event) => { event.preventDefault(); selectCategory(category) } : undefined}
+                >
                   <span>{category.name}</span>
-                </button>
+                </Link>
                 {hasChildren ? (
                   <button
                     className="joe-sidebar-category-expand"

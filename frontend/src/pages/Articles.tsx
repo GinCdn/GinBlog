@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { AppstoreOutlined, ArrowRightOutlined, CalendarOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { Empty, Pagination, Skeleton } from 'antd'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { publicApi } from '@/api'
 import BlogArticleCover from '@/components/BlogArticleCover'
 import BlogFooter from '@/components/BlogFooter'
@@ -9,6 +9,7 @@ import BlogHeader from '@/components/BlogHeader'
 import BlogSidebar from '@/components/BlogSidebar'
 import type { Article, Category, PageResponse } from '@/types'
 import { flattenCategories, formatBlogDate, getArticleExcerpt, getArticleTagNames, getCategoryPath } from '@/utils/blog'
+import { prefetchArticleRoute } from '@/utils/articlePrefetch'
 
 /** 公开文章归档页，保留分类筛选和标题搜索并改为 Joe 风格列表布局。 */
 // 递归查找指定分类。
@@ -146,7 +147,7 @@ export default function Articles() {
               {(data.list?.length || 0) > 0 ? (
                 <div className="joe-archive-list">
                   {data.list?.map((article, index) => (
-                    <article className="joe-archive-item" key={article.id} onClick={() => navigate(`/articles/${article.id}`)} role="link" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/articles/${article.id}`) }}>
+                    <article className="joe-archive-item" key={article.id}>
                       <BlogArticleCover article={article} index={index} className="joe-archive-cover" />
                       <div className="joe-archive-item-content">
                         <div className="joe-archive-item-meta"><span className="joe-latest-category">{article.category?.name || '未分类'}</span><span><CalendarOutlined /> {formatBlogDate(article.createTime)}</span><span><EyeOutlined /> {article.viewCount || 0}</span></div>
@@ -155,6 +156,14 @@ export default function Articles() {
                         <div className="joe-card-tags">{getArticleTagNames(article).slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
                       </div>
                       <ArrowRightOutlined className="joe-archive-arrow" />
+                      <Link
+                        className="joe-card-link"
+                        to={`/articles/${article.id}`}
+                        onMouseEnter={() => prefetchArticleRoute(article.id)}
+                        onFocus={() => prefetchArticleRoute(article.id)}
+                      >
+                        <span className="joe-card-link-text">{article.title}</span>
+                      </Link>
                     </article>
                   ))}
                 </div>
